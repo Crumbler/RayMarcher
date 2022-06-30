@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32602.215
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RayMarchLib", "RayMarchLib\RayMarchLib.csproj", "{98CB1157-5527-42A2-956A-C30762381835}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RayMarchConsole", "RayMarchConsole\RayMarchConsole.csproj", "{85DA72B9-FFFB-4888-9472-4AB4EB4D0AF1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{98CB1157-5527-42A2-956A-C30762381835}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98CB1157-5527-42A2-956A-C30762381835}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98CB1157-5527-42A2-956A-C30762381835}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98CB1157-5527-42A2-956A-C30762381835}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85DA72B9-FFFB-4888-9472-4AB4EB4D0AF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85DA72B9-FFFB-4888-9472-4AB4EB4D0AF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85DA72B9-FFFB-4888-9472-4AB4EB4D0AF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85DA72B9-FFFB-4888-9472-4AB4EB4D0AF1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0B06D92E-0FA4-489E-B782-121533267675}
+	EndGlobalSection
+EndGlobal
