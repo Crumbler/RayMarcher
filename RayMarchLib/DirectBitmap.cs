@@ -26,6 +26,11 @@ namespace RayMarchLib
             Bitmap = new Bitmap(width, height, width * 4, PixelFormat.Format32bppRgb, BitsHandle.AddrOfPinnedObject());
         }
 
+        ~DirectBitmap()
+        {
+            Dispose(disposing: false);
+        }
+
         public void SetPixel(int x, int y, Color color)
         {
             int index = x + (y * Width);
@@ -45,15 +50,24 @@ namespace RayMarchLib
 
         public void Dispose()
         {
-            if (Disposed)
+            Dispose(disposing: true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (!Disposed)
             {
-                return;
+                if (disposing)
+                {
+                    Bitmap.Dispose();
+                }
+
+                BitsHandle.Free();
+
+                Disposed = true;
             }
-
-            Disposed = true;
-
-            Bitmap.Dispose();
-            BitsHandle.Free();
         }
     }
 }
