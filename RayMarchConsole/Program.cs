@@ -1,5 +1,7 @@
 ﻿
 using System;
+using RayMarchLib;
+using System.Drawing;
 
 namespace RayMarchConsole
 {
@@ -7,7 +9,11 @@ namespace RayMarchConsole
     {
         public static void Main()
         {
-            Console.WriteLine("Hello World");
+            var bmp = new DirectBitmap(800, 800);
+
+            RayMarcher.CalculateFrame(new Scene(), bmp);
+
+            bmp.Bitmap.Save("img.png", System.Drawing.Imaging.ImageFormat.Png);
         }
     }
 }
