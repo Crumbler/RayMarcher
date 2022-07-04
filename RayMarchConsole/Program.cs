@@ -1,7 +1,7 @@
 ﻿
 using System;
 using RayMarchLib;
-using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace RayMarchConsole
 {
@@ -11,9 +11,11 @@ namespace RayMarchConsole
         {
             var bmp = new DirectBitmap(800, 800);
 
-            RayMarcher.CalculateFrame(new Scene(), bmp);
+            var marcher = new RayMarcher(new Scene(), bmp);
 
-            bmp.Bitmap.Save("img.png", System.Drawing.Imaging.ImageFormat.Png);
+            marcher.CalculateFrame();
+
+            marcher.Bitmap.Bitmap.Save("img.png", ImageFormat.Png);
         }
     }
 }
