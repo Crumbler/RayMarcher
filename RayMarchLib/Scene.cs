@@ -1,6 +1,7 @@
 ﻿
 
 using System;
+using System.Collections.Generic;
 
 namespace RayMarchLib
 {
@@ -16,6 +17,7 @@ namespace RayMarchLib
         /// </summary>
         public float MaxDist { get; set; }
         public int MaxIterations { get; set; }
+        public List<RMObject> Objects { get; set; }
 
         public Scene()
         {
@@ -23,6 +25,8 @@ namespace RayMarchLib
             Eps = 0.001f;
             MaxDist = 20.0f;
             MaxIterations = 50;
+
+            Objects = new List<RMObject>();
         }
     }
 }

@@ -75,7 +75,14 @@ namespace RayMarchLib
 
         private float Map(Vector3 v)
         {
-            return Vector3.Distance(v, new(0, 0, 5)) - 0.5f;
+            float minDist = float.PositiveInfinity;
+            
+            for (int i = 0; i < Scene.Objects.Count; ++i)
+            {
+                minDist = MathF.Min(minDist, Scene.Objects[i].Map(v));
+            }
+
+            return minDist;
         }
 
         private void CalculatePixel(int y, int x)
