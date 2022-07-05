@@ -27,7 +27,8 @@ namespace RayMarchLib
 
         public void CalculateFrame(int threads = 1)
         {
-            prMat = Matrix4x4.CreatePerspectiveFieldOfView(MathF.PI / 2.0f, 1.0f, 0.1f, 1000.0f);
+            float aspectRatio = (float)Bitmap.Width / Bitmap.Height;
+            prMat = Matrix4x4.CreatePerspectiveFieldOfView(Scene.Fov, aspectRatio, 0.1f, 1000.0f);
 
             int rowsPerThread = Bitmap.Height / threads;
 
@@ -86,13 +87,13 @@ namespace RayMarchLib
             Vector3 rayOrigin = Vector3.Zero, pos;
             float t = 0.0f, h = 0.0f;
 
-            for (int i = 0; i < 50; ++i)
+            for (int i = 0; i < Scene.MaxIterations; ++i)
             {
                 pos = rayOrigin + rayDir * t;
 
                 h = Map(pos);
 
-                if (h < 0.001f || h > 10.0f)
+                if (h < Scene.Eps || h > Scene.MaxDist)
                 {
                     break;
                 }
@@ -100,7 +101,7 @@ namespace RayMarchLib
                 t += h;
             }
 
-            if (h < 0.001f)
+            if (h < Scene.Eps)
             {
                 c = Color.White;
             }
