@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "RayMarchEditor (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "RayMarchEditor (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
