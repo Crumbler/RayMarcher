@@ -9,7 +9,7 @@ namespace RayMarchLib
     public class DirectBitmap : IDisposable
     {
         public Bitmap Bitmap { get; private set; }
-        public int[] Pixels { get; private set; }
+        public byte[] Pixels { get; private set; }
         public bool Disposed { get; private set; }
         public int Height { get; private set; }
         public int Width { get; private set; }
@@ -20,7 +20,7 @@ namespace RayMarchLib
         {
             Width = width;
             Height = height;
-            Pixels = new int[height * width];
+            Pixels = new byte[height * width * 4];
             BitsHandle = GCHandle.Alloc(Pixels, GCHandleType.Pinned);
 
             Bitmap = new Bitmap(width, height, width * 4, PixelFormat.Format32bppRgb, BitsHandle.AddrOfPinnedObject());
@@ -33,11 +33,11 @@ namespace RayMarchLib
 
         public void SetPixel(int x, int y, Color color)
         {
-            int index = x + (y * Width);
+            int index = (x + (y * Width)) * 4;
 
             int col = color.ToArgb();
 
-            Pixels[index] = col;
+            BitConverter.TryWriteBytes(Pixels.AsSpan(index), col);
         }
 
         public Color GetPixel(int x, int y)

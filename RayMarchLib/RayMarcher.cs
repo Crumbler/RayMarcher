@@ -81,7 +81,7 @@ namespace RayMarchLib
             {
                 minDist = MathF.Min(minDist, Scene.Objects[i].Map(v));
             }
-
+            
             return minDist;
         }
 
