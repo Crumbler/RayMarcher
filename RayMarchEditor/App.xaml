@@ -10,6 +10,7 @@
                 <!-- Other merged dictionaries here -->
             </ResourceDictionary.MergedDictionaries>
             <!-- Other app resources here -->
+            <local:BoolInverter x:Key="boolInverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

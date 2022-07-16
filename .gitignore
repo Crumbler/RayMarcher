@@ -1,3 +1,5 @@
 .vs
 bin
 obj
+*.pfx
+win10-x64.pubxml.user

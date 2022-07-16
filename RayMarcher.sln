@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RayMarchLib", "RayMarchLib\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RayMarchConsole", "RayMarchConsole\RayMarchConsole.csproj", "{85DA72B9-FFFB-4888-9472-4AB4EB4D0AF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RayMarchEditor", "RayMarchEditor\RayMarchEditor.csproj", "{0AF16287-1584-49B8-A59D-1AC7001382B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RayMarchEditor", "RayMarchEditor\RayMarchEditor.csproj", "{0AF16287-1584-49B8-A59D-1AC7001382B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

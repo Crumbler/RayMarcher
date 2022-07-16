@@ -11,7 +11,24 @@
     <UseWinUI>true</UseWinUI>
     <EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+    <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+    <PackageCertificateThumbprint>17104483EF4510B7087D8971EB7C17BE687625E1</PackageCertificateThumbprint>
+    <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxPackageDir>D:\My projects\RayMarcher\RayMarchEditor\bin\AppPackages\</AppxPackageDir>
+    <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+    <GenerateTestArtifacts>True</GenerateTestArtifacts>
+    <AppxBundle>Never</AppxBundle>
+    <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+	<UseWindowsForms>False</UseWindowsForms>
+	<StartupObject>RayMarchEditor.Program</StartupObject>
+	<AssemblyName>RayMarchEditor</AssemblyName>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="EditPage.xaml" />
+    <None Remove="ImagePage.xaml" />
+  </ItemGroup>
 
   <ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -37,5 +54,15 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RayMarchLib\RayMarchLib.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="EditPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="ImagePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 </Project>
