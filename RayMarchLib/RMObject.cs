@@ -19,7 +19,12 @@ namespace RayMarchLib
 
         public override string ToString()
         {
-            return Name ?? GetType().Name;
+            if (string.IsNullOrWhiteSpace(Name))
+            {
+                return GetType().Name;
+            }
+
+            return Name;
         }
     }
 }
