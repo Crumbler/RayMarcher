@@ -28,5 +28,10 @@ namespace RayMarchLib
 
             Objects = new List<RMObject>();
         }
+
+        public override string ToString()
+        {
+            return nameof(Scene);
+        }
     }
 }

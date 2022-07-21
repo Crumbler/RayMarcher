@@ -32,7 +32,10 @@ namespace RayMarchEditor
         {
             base.OnNavigatedTo(e);
 
-            imgMain.Source = (e.Parameter as DirectBitmap).ToWriteableBitmap();
+            if (e.Parameter != null)
+            {
+                imgMain.Source = (e.Parameter as DirectBitmap).ToWriteableBitmap();
+            }
         }
     }
 }

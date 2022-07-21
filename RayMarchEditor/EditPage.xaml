@@ -7,9 +7,27 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.Resources>
+        <MenuFlyout x:Key="itemFlyout">
+            <MenuFlyoutItem Text="Edit"/>
+            <MenuFlyoutItem Text="Close"/>
+        </MenuFlyout>
+        <Style TargetType="NumberBox">
+            <Setter Property="Margin" Value="0, 8"/>
+        </Style>
+    </Page.Resources>
 
-    <Grid RowDefinitions="Auto, *">
-        <BreadcrumbBar x:Name="barMain" Grid.Row="0"
-                       Margin="16, 0"/>
+    <Grid ColumnDefinitions="*, *" Padding="0, 8">
+        <TreeView x:Name="treeView" Grid.Column="0">
+            <TreeView.ItemTemplate>
+                <DataTemplate>
+                    <TreeViewItem RightTapped="TreeViewItem_RightTapped" Content="{Binding}"
+                                  ContextFlyout="{StaticResource itemFlyout}"/>
+                </DataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+        <ScrollViewer Grid.Column="1" >
+            <StackPanel x:Name="stackPanel"/>
+        </ScrollViewer>
     </Grid>
 </Page>

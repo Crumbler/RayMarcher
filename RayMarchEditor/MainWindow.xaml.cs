@@ -14,6 +14,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using RayMarchLib;
 using Microsoft.UI.Xaml.Media.Imaging;
+using System.Diagnostics;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -25,14 +26,19 @@ namespace RayMarchEditor
     /// </summary>
     public sealed partial class MainWindow : Window
     {
+        public Scene scene;
+
         public MainWindow()
         {
             this.InitializeComponent();
 
-            rootFrame.Navigate(typeof(EditPage));
+            scene = new Scene();
+
+            rootFrame.Navigate(typeof(EditPage), this);
 
             Title = "RayMarchEditor";
         }
+
         private void MenuExit_Click(object sender, RoutedEventArgs e)
         {
             Close();
@@ -40,7 +46,7 @@ namespace RayMarchEditor
 
         private void Render_Click(object sender, RoutedEventArgs e)
         {
-            var bmp = new DirectBitmap(100, 100);
+            using var bmp = new DirectBitmap(1280, 720);
             for (int i = 0; i < 99; ++i)
             {
                 bmp.SetPixel(i, i, System.Drawing.Color.Red);
