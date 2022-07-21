@@ -7,9 +7,9 @@ namespace RayMarchLib
     {
         public float Radius { get; set; }
 
-        public Sphere(float radius)
+        public Sphere()
         {
-            Radius = radius;
+            Radius = 1.0f;
         }
 
         protected override float GetDist(Vector3 v)

@@ -14,8 +14,9 @@ namespace RayMarchConsole
 
             var scene = new Scene();
 
-            var s1 = new Sphere(0.5f)
+            var s1 = new Sphere()
             {
+                Radius = 0.5f,
                 Position = new Vector3(0, 0, 5)
             };
 
