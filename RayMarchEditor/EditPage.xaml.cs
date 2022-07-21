@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Navigation;
+using RayMarchLib;
 using System;
 using System.Diagnostics;
 using System.Reflection;
@@ -19,11 +20,14 @@ namespace RayMarchEditor
     public sealed partial class EditPage : Page
     {
         private MainWindow window;
-        private Frame rootFrame;
+        private Scene scene;
         private bool initialized;
         private MenuFlyout itemFlyout;
-        private IncrementNumberRounder rounder;
-        private DecimalFormatter decimalFormatter;
+        private readonly IncrementNumberRounder rounder;
+        private readonly DecimalFormatter decimalFormatter;
+        private TreeViewNode rightClickedNode;
+        // the object currently being edited
+        private object editObj;
 
         public EditPage()
         {
@@ -32,8 +36,6 @@ namespace RayMarchEditor
             initialized = false;
 
             itemFlyout = Resources["itemFlyout"] as MenuFlyout;
-
-            rootFrame = this.Parent as Frame;
 
             NavigationCacheMode = NavigationCacheMode.Required;
 
@@ -62,6 +64,7 @@ namespace RayMarchEditor
             initialized = true;
 
             window = e.Parameter as MainWindow;
+            scene = window.scene;
 
             FillTree();
 
@@ -74,21 +77,38 @@ namespace RayMarchEditor
         {
             var sceneNode = new TreeViewNode()
             {
-                Content = window.scene
+                Content = scene
             };
 
             treeView.RootNodes.Add(sceneNode);
 
-            var node = new TreeViewNode()
+            var objectsNode = new TreeViewNode()
             {
                 Content = "Objects"
             };
 
-            sceneNode.Children.Add(node);
+            foreach (RMObject obj in scene.Objects)
+            {
+                AddObjectToTree(objectsNode, obj);
+            }
+
+            sceneNode.Children.Add(objectsNode);
+        }
+
+        private void AddObjectToTree(TreeViewNode parentNode, RMObject obj)
+        {
+            var objectNode = new TreeViewNode()
+            {
+                Content = obj
+            };
+
+            parentNode.Children.Add(objectNode);
         }
 
         private void EditObject(object obj)
         {
+            editObj = obj;
+
             stackPanel.Children.Clear();
 
             var objectDesc = new TextBlock()
@@ -106,10 +126,10 @@ namespace RayMarchEditor
 
                 switch (true)
                 {
-                    case true when typeof(float).IsAssignableFrom(pType):
+                    case true when typeof(float) == pType:
                         EditNumber(info, obj);
                         break;
-                    case true when typeof(int).IsAssignableFrom(pType):
+                    case true when typeof(int) == pType:
                         EditNumber(info, obj, isInt: true);
                         break;
                 }
@@ -144,10 +164,50 @@ namespace RayMarchEditor
         private void TreeViewItem_RightTapped(object sender, RightTappedRoutedEventArgs e)
         {
             var item = sender as TreeViewItem;
-
             var node = item.Content as TreeViewNode;
 
-            Debug.WriteLine(node.Content.GetType().ToString());
+            rightClickedNode = node;
+        }
+
+        private void TreeViewItem_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            var item = sender as TreeViewItem;
+            var node = item.Content as TreeViewNode;
+
+            if (node.Content.GetType() != typeof(string))
+            {
+                EditObject(node.Content);
+            }
+        }
+
+        private void AddObject_Click(object sender, RoutedEventArgs e)
+        {
+            var sphere = new Sphere();
+
+            scene.Objects.Add(sphere);
+
+            TreeViewNode parentNode = treeView.RootNodes[0].Children[0];
+
+            var node = new TreeViewNode()
+            {
+                Content = sphere
+            };
+
+            parentNode.Children.Add(node);
+        }
+
+        private void Delete_Click(object sender, RoutedEventArgs e)
+        {
+            TreeViewNode node = rightClickedNode;
+
+            node.Parent.Children.Remove(node);
+
+            var obj = node.Content as RMObject;
+
+            if (obj == editObj)
+            {
+                EditObject(scene);
+            }
         }
     }
 }

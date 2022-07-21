@@ -9,8 +9,8 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.Resources>
         <MenuFlyout x:Key="itemFlyout">
-            <MenuFlyoutItem Text="Edit"/>
-            <MenuFlyoutItem Text="Close"/>
+            <MenuFlyoutItem Text="Add object" Click="AddObject_Click"/>
+            <MenuFlyoutItem Text="Delete" Click="Delete_Click"/>
         </MenuFlyout>
         <Style TargetType="NumberBox">
             <Setter Property="Margin" Value="0, 8"/>
@@ -22,6 +22,7 @@
             <TreeView.ItemTemplate>
                 <DataTemplate>
                     <TreeViewItem RightTapped="TreeViewItem_RightTapped" Content="{Binding}"
+                                  DoubleTapped="TreeViewItem_DoubleTapped"
                                   ContextFlyout="{StaticResource itemFlyout}"/>
                 </DataTemplate>
             </TreeView.ItemTemplate>
