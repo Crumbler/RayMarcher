@@ -65,6 +65,8 @@ namespace RayMarchEditor
 
             FillTree();
 
+            treeView.ExpandAll();
+
             EditObject(window.scene);
         }
 
@@ -72,7 +74,7 @@ namespace RayMarchEditor
         {
             var sceneNode = new TreeViewNode()
             {
-                Content = "Scene"
+                Content = window.scene
             };
 
             treeView.RootNodes.Add(sceneNode);
@@ -143,7 +145,9 @@ namespace RayMarchEditor
         {
             var item = sender as TreeViewItem;
 
-            
+            var node = item.Content as TreeViewNode;
+
+            Debug.WriteLine(node.Content.GetType().ToString());
         }
     }
 }
