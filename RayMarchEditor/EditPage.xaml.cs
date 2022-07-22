@@ -233,6 +233,30 @@ namespace RayMarchEditor
             var node = block.Tag as TreeViewNode;
 
             rightClickedNode = node;
+
+            var oType = node.Content.GetType();
+
+            switch (true)
+            {
+                case true when typeof(Scene) == oType:
+                    // Add object
+                    itemFlyout.Items[0].Visibility = Visibility.Visible;
+                    itemFlyout.Items[1].Visibility = Visibility.Collapsed;
+                    break;
+
+                case true when typeof(RMObject).IsAssignableFrom(oType):
+                    itemFlyout.Items[0].Visibility = Visibility.Collapsed;
+                    // Delete
+                    itemFlyout.Items[1].Visibility = Visibility.Visible;
+                    break;
+
+                default:
+                    foreach (MenuFlyoutItem item in itemFlyout.Items)
+                    {
+                        item.Visibility = Visibility.Collapsed;
+                    }
+                    break;
+            }
         }
 
         private void TreeViewItem_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
@@ -272,6 +296,7 @@ namespace RayMarchEditor
             node.Parent.Children.Remove(node);
 
             var obj = node.Content as RMObject;
+            scene.Objects.Remove(obj);
 
             if (obj == editObj)
             {
@@ -283,8 +308,20 @@ namespace RayMarchEditor
         {
             var box = sender as TextBlock;
             var node = box.Tag as TreeViewNode;
+
+            // The TreeViewNode was deleted from the tree
+            if (node == null)
+            {
+                return;
+            }
+
             object content = node.Content;
             box.Text = content.ToString();
+
+            if (content.GetType() == typeof(string))
+            {
+                box.ContextFlyout = null;
+            }
         }
     }
 }
