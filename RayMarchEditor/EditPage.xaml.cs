@@ -28,6 +28,9 @@ namespace RayMarchEditor
         private TreeViewNode rightClickedNode;
         // the object currently being edited
         private object editObj;
+        // the node and item currently being edited
+        private TreeViewNode editNode;
+        private TextBlock editBlock;
 
         public EditPage()
         {
@@ -70,7 +73,7 @@ namespace RayMarchEditor
 
             treeView.ExpandAll();
 
-            EditObject(window.scene);
+            EditObject(scene);
         }
 
         private void FillTree()
@@ -86,7 +89,7 @@ namespace RayMarchEditor
             {
                 Content = "Objects"
             };
-
+            
             foreach (RMObject obj in scene.Objects)
             {
                 AddObjectToTree(objectsNode, obj);
@@ -129,8 +132,13 @@ namespace RayMarchEditor
                     case true when typeof(float) == pType:
                         EditNumber(info, obj);
                         break;
+
                     case true when typeof(int) == pType:
                         EditNumber(info, obj, isInt: true);
+                        break;
+
+                    case true when info.Name == "Name":
+                        EditName(obj);
                         break;
                 }
             }
@@ -161,21 +169,52 @@ namespace RayMarchEditor
             stackPanel.Children.Add(box);
         }
 
+        private void EditName(object obj)
+        {
+            var box = new TextBox
+            {
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Text = obj.GetType().GetProperty("Name").GetValue(obj) as string
+            };
+
+            box.TextChanged += NameBox_TextChanged;
+
+            var header = new TextBlock()
+            {
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Text = "Name"
+            };
+
+            stackPanel.Children.Add(header);
+            stackPanel.Children.Add(box);
+        }
+
+        private void NameBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var box = sender as TextBox;
+            (editObj as RMObject).Name = box.Text;
+            editBlock.Text = editObj.ToString();
+        }
+
         private void TreeViewItem_RightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-            var item = sender as TreeViewItem;
-            var node = item.Content as TreeViewNode;
+            var block = sender as TextBlock;
+            var node = block.Tag as TreeViewNode;
+            //var node = item.Content as ObjectNode;
 
             rightClickedNode = node;
         }
 
         private void TreeViewItem_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-            var item = sender as TreeViewItem;
-            var node = item.Content as TreeViewNode;
+            var block = sender as TextBlock;
+            var node = block.Tag as TreeViewNode;
 
             if (node.Content.GetType() != typeof(string))
             {
+                editBlock = block;
+                editNode = node;
+
                 EditObject(node.Content);
             }
         }
@@ -208,6 +247,14 @@ namespace RayMarchEditor
             {
                 EditObject(scene);
             }
+        }
+
+        private void TextBlock_Loaded(object sender, RoutedEventArgs e)
+        {
+            var box = sender as TextBlock;
+            var node = box.Tag as TreeViewNode;
+            object content = node.Content;
+            box.Text = content.ToString();
         }
     }
 }

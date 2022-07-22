@@ -21,9 +21,10 @@
         <TreeView x:Name="treeView" Grid.Column="0">
             <TreeView.ItemTemplate>
                 <DataTemplate>
-                    <TreeViewItem RightTapped="TreeViewItem_RightTapped" Content="{Binding}"
-                                  DoubleTapped="TreeViewItem_DoubleTapped"
-                                  ContextFlyout="{StaticResource itemFlyout}"/>
+                    <TextBlock RightTapped="TreeViewItem_RightTapped" Tag="{Binding}"
+                               DoubleTapped="TreeViewItem_DoubleTapped"
+                               ContextFlyout="{StaticResource itemFlyout}"
+                               Loaded="TextBlock_Loaded"/>
                 </DataTemplate>
             </TreeView.ItemTemplate>
         </TreeView>
