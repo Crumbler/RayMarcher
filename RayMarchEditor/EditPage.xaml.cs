@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Navigation;
 using RayMarchLib;
 using System;
 using System.Diagnostics;
+using System.Numerics;
 using System.Reflection;
 using Windows.Globalization.NumberFormatting;
 
@@ -137,11 +138,40 @@ namespace RayMarchEditor
                         EditNumber(info, obj, isInt: true);
                         break;
 
+                    case true when typeof(Vector3) == pType:
+                        EditVector3(info, obj);
+                        break;
+
                     case true when info.Name == "Name":
                         EditName(obj);
                         break;
                 }
             }
+        }
+
+        private void EditVector3(PropertyInfo info, object obj)
+        {
+            var box = new Vector3Box()
+            {
+                HorizontalAlignment = HorizontalAlignment.Left
+            };
+
+            var binding = new Binding()
+            {
+                Source = obj,
+                Path = new PropertyPath(info.Name),
+                Mode = BindingMode.TwoWay
+            };
+
+            box.SetBinding(Vector3Box.VectorProperty, binding);
+
+            var block = new TextBlock()
+            {
+                Text = info.Name
+            };
+
+            stackPanel.Children.Add(block);
+            stackPanel.Children.Add(box);
         }
 
         private void EditNumber(PropertyInfo info, object obj, bool isInt = false)
@@ -200,7 +230,6 @@ namespace RayMarchEditor
         {
             var block = sender as TextBlock;
             var node = block.Tag as TreeViewNode;
-            //var node = item.Content as ObjectNode;
 
             rightClickedNode = node;
         }
