@@ -1,6 +1,7 @@
 ﻿<UserControl
     x:Class="RayMarchEditor.Vector3Box"
     x:Name="root"
+    DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:RayMarchEditor"
@@ -15,9 +16,9 @@
         </Style>
     </UserControl.Resources>
 
-    <StackPanel Orientation="Vertical">
-        <NumberBox Value="{Binding X, ElementName=root, Mode=TwoWay}"/>
-        <NumberBox Value="{Binding Y, ElementName=root, Mode=TwoWay}"/>
-        <NumberBox Value="{Binding Z, ElementName=root, Mode=TwoWay}"/>
+    <StackPanel Orientation="{x:Bind Orientation, Mode=OneWay}">
+        <NumberBox Value="{x:Bind X, Mode=TwoWay}"/>
+        <NumberBox Value="{x:Bind Y, Mode=TwoWay}"/>
+        <NumberBox Value="{x:Bind Z, Mode=TwoWay}"/>
     </StackPanel>
 </UserControl>

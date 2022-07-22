@@ -153,9 +153,10 @@ namespace RayMarchEditor
         {
             var box = new Vector3Box()
             {
-                HorizontalAlignment = HorizontalAlignment.Left
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Orientation = Orientation.Horizontal
             };
-
+            
             var binding = new Binding()
             {
                 Source = obj,

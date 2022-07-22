@@ -51,11 +51,24 @@ namespace RayMarchEditor
             set => Vector = new Vector3(Vector.X, Vector.Y, value);
         }
 
+        public Orientation Orientation
+        {
+            get => (Orientation)GetValue(OrientationProperty);
+            set => SetValue(OrientationProperty, value);
+        }
+
         public static readonly DependencyProperty VectorProperty =
             DependencyProperty.Register(
                 nameof(Vector),
                 typeof(Vector3),
                 typeof(Vector3Box),
                 new PropertyMetadata(default(Vector3)));
+
+        public static readonly DependencyProperty OrientationProperty =
+            DependencyProperty.Register(
+                nameof(Orientation),
+                typeof(Orientation),
+                typeof(Vector3Box),
+                new PropertyMetadata(Orientation.Horizontal));
     }
 }
