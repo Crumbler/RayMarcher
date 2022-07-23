@@ -10,14 +10,14 @@ namespace RayMarchConsole
     {
         public static void Main()
         {
-            var bmp = new DirectBitmap(800, 800);
+            var bmp = new DirectBitmap(1280, 720);
 
             var scene = new Scene();
 
             var s1 = new Sphere()
             {
                 Radius = 0.5f,
-                Position = new Vector3(0, 0, 5)
+                Position = new Vector3(0, -1, -3)
             };
 
             scene.Objects.Add(s1);
