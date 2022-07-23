@@ -27,12 +27,18 @@ namespace RayMarchEditor
     public sealed partial class MainWindow : Window
     {
         public Scene scene;
+        private RayMarcher marcher;
 
         public MainWindow()
         {
             this.InitializeComponent();
 
             scene = new Scene();
+
+            marcher = new RayMarcher()
+            {
+                Scene = scene
+            };
 
             rootFrame.Navigate(typeof(EditPage), this);
 
@@ -46,13 +52,15 @@ namespace RayMarchEditor
 
         private void Render_Click(object sender, RoutedEventArgs e)
         {
-            using var bmp = new DirectBitmap(1280, 720);
-            for (int i = 0; i < 99; ++i)
-            {
-                bmp.SetPixel(i, i, System.Drawing.Color.Red);
-            }
+            using var bmp = new DirectBitmap((int)rootFrame.ActualWidth, (int)rootFrame.ActualHeight);
+
+            marcher.Bitmap = bmp;
+
+            marcher.CalculateFrame(threads: 4);
 
             rootFrame.Navigate(typeof(ImagePage), bmp);
+
+            marcher.Bitmap = null;
         }
 
         private void Back_Click(object sender, RoutedEventArgs e)
