@@ -273,17 +273,36 @@ namespace RayMarchEditor
             }
         }
 
-        private void AddObject_Click(object sender, RoutedEventArgs e)
+        private async void AddObject_Click(object sender, RoutedEventArgs e)
         {
-            var sphere = new Sphere();
+            var choicePage = new ChooseObjectTypePage();
 
-            scene.Objects.Add(sphere);
+            var dialog = new ContentDialog()
+            {
+                XamlRoot = this.XamlRoot,
+                Title = "Pick an object type",
+                PrimaryButtonText = "OK",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Primary,
+                Content = choicePage
+            };
+
+            var res = await dialog.ShowAsync();
+
+            if (res != ContentDialogResult.Primary)
+            {
+                return;
+            }
+
+            var obj = Activator.CreateInstance(choicePage.SelectedType) as RMObject;
+
+            scene.Objects.Add(obj);
 
             TreeViewNode parentNode = treeView.RootNodes[0].Children[0];
 
             var node = new TreeViewNode()
             {
-                Content = sphere
+                Content = obj
             };
 
             parentNode.Children.Add(node);

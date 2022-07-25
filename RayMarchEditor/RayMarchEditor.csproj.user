@@ -11,6 +11,9 @@
     <None Update="App.xaml">
       <SubType>Designer</SubType>
     </None>
+    <Page Update="ChooseObjectTypePage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Vector3Box.xaml">
       <SubType>Designer</SubType>
     </Page>

@@ -33,7 +33,7 @@ namespace RayMarchLib
         }
 
         private static readonly XmlSerializer serializer;
-        private static readonly Type[] objectTypes;
+        public static readonly Type[] objectTypes;
         private static readonly XmlWriterSettings writerSettings = new()
         {
             Indent = true

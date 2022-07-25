@@ -26,6 +26,7 @@
 	<AssemblyName>RayMarchEditor</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="ChooseObjectTypePage.xaml" />
     <None Remove="EditPage.xaml" />
     <None Remove="ImagePage.xaml" />
     <None Remove="Vector3Box.xaml" />
@@ -55,6 +56,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RayMarchLib\RayMarchLib.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="ChooseObjectTypePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Vector3Box.xaml">
