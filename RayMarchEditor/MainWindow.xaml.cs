@@ -33,6 +33,8 @@ namespace RayMarchEditor
         {
             this.InitializeComponent();
 
+            Title = "RayMarchEditor";
+
             scene = new Scene();
 
             marcher = new RayMarcher()
@@ -40,9 +42,8 @@ namespace RayMarchEditor
                 Scene = scene
             };
 
-            rootFrame.Navigate(typeof(EditPage), this);
-
-            Title = "RayMarchEditor";
+            rootFrame.Navigate(typeof(EditPage));
+            (rootFrame.Content as EditPage).LoadScene(scene);
         }
 
         private void MenuExit_Click(object sender, RoutedEventArgs e)
@@ -66,6 +67,20 @@ namespace RayMarchEditor
         private void Back_Click(object sender, RoutedEventArgs e)
         {
             rootFrame.GoBack();
+        }
+
+        private void MenuNew_Click(object sender, RoutedEventArgs e)
+        {
+            if (rootFrame.CanGoBack)
+            {
+                rootFrame.GoBack();
+            }
+
+            var page = rootFrame.Content as EditPage;
+
+            scene = new Scene();
+
+            page.LoadScene(scene);
         }
     }
 }

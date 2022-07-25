@@ -14,9 +14,10 @@
             <AppBarButton Icon="Page" Label="File">
                 <AppBarButton.Flyout>
                     <MenuFlyout>
-                        <MenuFlyoutItem Text="New"/>
-                        <MenuFlyoutItem Text="Open..."/>
-                        <MenuFlyoutItem Text="Save as"/>
+                        <MenuFlyoutItem Text="New" Click="MenuNew_Click"/>
+                        <MenuFlyoutItem Text="Open scene"/>
+                        <MenuFlyoutItem Text="Save scene"/>
+                        <MenuFlyoutItem Template="Save image"/>
                         <MenuFlyoutItem Text="Exit" Click="MenuExit_Click"/>
                     </MenuFlyout>
                 </AppBarButton.Flyout>

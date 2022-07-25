@@ -20,9 +20,7 @@ namespace RayMarchEditor
     /// </summary>
     public sealed partial class EditPage : Page
     {
-        private MainWindow window;
         private Scene scene;
-        private bool initialized;
         private MenuFlyout itemFlyout;
         private readonly IncrementNumberRounder rounder;
         private readonly DecimalFormatter decimalFormatter;
@@ -36,8 +34,6 @@ namespace RayMarchEditor
         public EditPage()
         {
             this.InitializeComponent();
-
-            initialized = false;
 
             itemFlyout = Resources["itemFlyout"] as MenuFlyout;
 
@@ -56,19 +52,9 @@ namespace RayMarchEditor
             };
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        public void LoadScene(Scene scene)
         {
-            base.OnNavigatedTo(e);
-
-            if (initialized)
-            {
-                return;
-            }
-
-            initialized = true;
-
-            window = e.Parameter as MainWindow;
-            scene = window.scene;
+            this.scene = scene;
 
             FillTree();
 
@@ -79,6 +65,8 @@ namespace RayMarchEditor
 
         private void FillTree()
         {
+            treeView.RootNodes.Clear();
+
             var sceneNode = new TreeViewNode()
             {
                 Content = scene
