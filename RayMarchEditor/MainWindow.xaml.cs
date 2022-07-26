@@ -32,6 +32,7 @@ namespace RayMarchEditor
         public Scene scene;
         private RayMarcher marcher;
         private FileSavePicker saveScenePicker;
+        private FileOpenPicker openScenePicker;
 
         public MainWindow()
         {
@@ -39,12 +40,7 @@ namespace RayMarchEditor
 
             Title = "RayMarchEditor";
 
-            scene = new Scene();
-
-            marcher = new RayMarcher()
-            {
-                Scene = scene
-            };
+            marcher = new RayMarcher();
 
             IntPtr hwnd = WindowNative.GetWindowHandle(this);
 
@@ -58,8 +54,19 @@ namespace RayMarchEditor
 
             InitializeWithWindow.Initialize(saveScenePicker, hwnd);
 
+            openScenePicker = new FileOpenPicker()
+            {
+                SuggestedStartLocation = PickerLocationId.ComputerFolder,
+                ViewMode = PickerViewMode.List
+            };
+
+            openScenePicker.FileTypeFilter.Add(".xml");
+
+            InitializeWithWindow.Initialize(openScenePicker, hwnd);
+
             rootFrame.Navigate(typeof(EditPage));
-            (rootFrame.Content as EditPage).LoadScene(scene);
+
+            LoadScene(new Scene());
         }
 
         private void MenuExit_Click(object sender, RoutedEventArgs e)
@@ -87,6 +94,11 @@ namespace RayMarchEditor
 
         private void MenuNew_Click(object sender, RoutedEventArgs e)
         {
+            LoadScene(new Scene());
+        }
+
+        private void LoadScene(Scene scene)
+        {
             if (rootFrame.CanGoBack)
             {
                 rootFrame.GoBack();
@@ -94,7 +106,8 @@ namespace RayMarchEditor
 
             var page = rootFrame.Content as EditPage;
 
-            scene = new Scene();
+            this.scene = scene;
+            marcher.Scene = scene;
 
             page.LoadScene(scene);
         }
@@ -108,6 +121,19 @@ namespace RayMarchEditor
             }
 
             scene.SerializeToFile(file.Path);
+        }
+
+        private async void MenuOpenScene_Click(object sender, RoutedEventArgs e)
+        {
+            StorageFile file = await openScenePicker.PickSingleFileAsync();
+            if (file == null)
+            {
+                return;
+            }
+
+            var scene = Scene.LoadFromFile(file.Path);
+
+            LoadScene(scene);
         }
     }
 }
