@@ -5,6 +5,7 @@ using System.Diagnostics;
 using Windows.Storage.Pickers;
 using Windows.Storage;
 using WinRT.Interop;
+using Microsoft.UI.Xaml.Controls;
 
 namespace RayMarchEditor
 {
@@ -12,7 +13,7 @@ namespace RayMarchEditor
     {
         public Scene scene;
         private RayMarcher marcher;
-        private FileSavePicker saveScenePicker;
+        private FileSavePicker saveScenePicker, saveImagePicker;
         private FileOpenPicker openScenePicker;
 
         public MainWindow()
@@ -53,6 +54,16 @@ namespace RayMarchEditor
             openScenePicker.FileTypeFilter.Add(".xml");
 
             InitializeWithWindow.Initialize(openScenePicker, hwnd);
+
+            saveImagePicker = new FileSavePicker()
+            {
+                SuggestedStartLocation = PickerLocationId.ComputerFolder,
+                SuggestedFileName = "scene"
+            };
+
+            saveImagePicker.FileTypeChoices.Add("Image", new string[] { ".png" });
+
+            InitializeWithWindow.Initialize(saveImagePicker, hwnd);
         }
 
         private void MenuExit_Click(object sender, RoutedEventArgs e)
@@ -120,6 +131,43 @@ namespace RayMarchEditor
             var scene = Scene.LoadFromFile(file.Path);
 
             LoadScene(scene);
+        }
+
+        private async void MenuSaveImage_Click(object sender, RoutedEventArgs e)
+        {
+            var saveImagePage = new SaveImagePage();
+
+            var saveImageDialog = new ContentDialog()
+            {
+                XamlRoot = this.Content.XamlRoot,
+                Title = "Edit image settings",
+                PrimaryButtonText = "OK",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Primary,
+                Content = saveImagePage
+            };
+
+            var res = await saveImageDialog.ShowAsync();
+
+            if (res != ContentDialogResult.Primary)
+            {
+                return;
+            }
+
+            StorageFile file = await saveImagePicker.PickSaveFileAsync();
+            if (file == null)
+            {
+                return;
+            }
+
+            using var bmp = new DirectBitmap(saveImagePage.ImageWidth, saveImagePage.ImageHeight);
+
+            marcher.Bitmap = bmp;
+            marcher.CalculateFrame(4);
+
+            bmp.Bitmap.Save(file.Path);
+
+            marcher.Bitmap = null;
         }
     }
 }

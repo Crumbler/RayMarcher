@@ -29,6 +29,7 @@
     <None Remove="ChooseObjectTypePage.xaml" />
     <None Remove="EditPage.xaml" />
     <None Remove="ImagePage.xaml" />
+    <None Remove="SaveImagePage.xaml" />
     <None Remove="Vector3Box.xaml" />
   </ItemGroup>
 
@@ -56,6 +57,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RayMarchLib\RayMarchLib.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="SaveImagePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="ChooseObjectTypePage.xaml">

@@ -11,6 +11,9 @@
     <None Update="App.xaml">
       <SubType>Designer</SubType>
     </None>
+    <Page Update="SaveImagePage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="ChooseObjectTypePage.xaml">
       <SubType>Designer</SubType>
     </Page>
