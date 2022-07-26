@@ -15,6 +15,9 @@ using Windows.Foundation.Collections;
 using RayMarchLib;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System.Diagnostics;
+using Windows.Storage.Pickers;
+using Windows.Storage;
+using WinRT.Interop;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -28,6 +31,7 @@ namespace RayMarchEditor
     {
         public Scene scene;
         private RayMarcher marcher;
+        private FileSavePicker saveScenePicker;
 
         public MainWindow()
         {
@@ -41,6 +45,18 @@ namespace RayMarchEditor
             {
                 Scene = scene
             };
+
+            IntPtr hwnd = WindowNative.GetWindowHandle(this);
+
+            saveScenePicker = new FileSavePicker
+            {
+                SuggestedStartLocation = PickerLocationId.ComputerFolder,
+                SuggestedFileName = "scene"
+            };
+
+            saveScenePicker.FileTypeChoices.Add("XML", new string[] { ".xml" });
+
+            InitializeWithWindow.Initialize(saveScenePicker, hwnd);
 
             rootFrame.Navigate(typeof(EditPage));
             (rootFrame.Content as EditPage).LoadScene(scene);
@@ -81,6 +97,17 @@ namespace RayMarchEditor
             scene = new Scene();
 
             page.LoadScene(scene);
+        }
+
+        private async void MenuSaveScene_Click(object sender, RoutedEventArgs e)
+        {
+            StorageFile file = await saveScenePicker.PickSaveFileAsync();
+            if (file == null)
+            {
+                return;
+            }
+
+            scene.SerializeToFile(file.Path);
         }
     }
 }

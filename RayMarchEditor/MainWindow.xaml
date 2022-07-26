@@ -16,8 +16,8 @@
                     <MenuFlyout>
                         <MenuFlyoutItem Text="New" Click="MenuNew_Click"/>
                         <MenuFlyoutItem Text="Open scene"/>
-                        <MenuFlyoutItem Text="Save scene"/>
-                        <MenuFlyoutItem Template="Save image"/>
+                        <MenuFlyoutItem Text="Save scene" Click="MenuSaveScene_Click"/>
+                        <MenuFlyoutItem Text="Save image"/>
                         <MenuFlyoutItem Text="Exit" Click="MenuExit_Click"/>
                     </MenuFlyout>
                 </AppBarButton.Flyout>
