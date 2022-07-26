@@ -10,19 +10,12 @@ using System.Numerics;
 using System.Reflection;
 using Windows.Globalization.NumberFormatting;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace RayMarchEditor
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class EditPage : Page
     {
         private Scene scene;
         private MenuFlyout itemFlyout;
-        private readonly IncrementNumberRounder rounder;
         private readonly DecimalFormatter decimalFormatter;
         private TreeViewNode rightClickedNode;
         // the object currently being edited
@@ -35,21 +28,11 @@ namespace RayMarchEditor
         {
             this.InitializeComponent();
 
+            decimalFormatter = App.Current.Resources["decimalFormatter"] as DecimalFormatter;
+
             itemFlyout = Resources["itemFlyout"] as MenuFlyout;
 
             NavigationCacheMode = NavigationCacheMode.Required;
-
-            rounder = new IncrementNumberRounder()
-            {
-                RoundingAlgorithm = RoundingAlgorithm.RoundHalfUp
-            };
-
-            decimalFormatter = new DecimalFormatter()
-            {
-                FractionDigits = 0,
-                
-                NumberRounder = rounder
-            };
         }
 
         public void LoadScene(Scene scene)
