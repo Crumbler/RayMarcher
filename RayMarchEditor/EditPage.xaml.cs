@@ -15,7 +15,7 @@ namespace RayMarchEditor
     public sealed partial class EditPage : Page
     {
         private Scene scene;
-        private MenuFlyout itemFlyout;
+        private readonly MenuFlyout itemFlyout;
         private readonly DecimalFormatter decimalFormatter;
         private TreeViewNode rightClickedNode;
         // the object currently being edited
@@ -31,8 +31,6 @@ namespace RayMarchEditor
             decimalFormatter = App.Current.Resources["decimalFormatter"] as DecimalFormatter;
 
             itemFlyout = Resources["itemFlyout"] as MenuFlyout;
-
-            NavigationCacheMode = NavigationCacheMode.Required;
         }
 
         public void LoadScene(Scene scene)
@@ -246,26 +244,26 @@ namespace RayMarchEditor
 
         private async void AddObject_Click(object sender, RoutedEventArgs e)
         {
-            var choicePage = new ChooseObjectTypePage();
+            var chooseObjectTypePage = new ChooseObjectTypePage();
 
-            var dialog = new ContentDialog()
+            var chooseObjectTypeDialog = new ContentDialog()
             {
                 XamlRoot = this.XamlRoot,
                 Title = "Pick an object type",
                 PrimaryButtonText = "OK",
                 CloseButtonText = "Cancel",
                 DefaultButton = ContentDialogButton.Primary,
-                Content = choicePage
+                Content = chooseObjectTypePage
             };
 
-            var res = await dialog.ShowAsync();
+            var res = await chooseObjectTypeDialog.ShowAsync();
 
             if (res != ContentDialogResult.Primary)
             {
                 return;
             }
-
-            var obj = Activator.CreateInstance(choicePage.SelectedType) as RMObject;
+            
+            var obj = Activator.CreateInstance(chooseObjectTypePage.SelectedType) as RMObject;
 
             scene.Objects.Add(obj);
 
