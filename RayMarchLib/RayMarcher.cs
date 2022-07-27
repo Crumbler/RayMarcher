@@ -27,6 +27,8 @@ namespace RayMarchLib
 
         public void CalculateFrame(int threads = 1)
         {
+            Scene.PreCalculate();
+
             float aspectRatio = (float)Bitmap.Width / Bitmap.Height;
             prMatInv = Matrix4x4.CreatePerspectiveFieldOfView(Scene.Fov, aspectRatio, 0.1f, 1000.0f);
             Matrix4x4.Invert(prMatInv, out prMatInv);

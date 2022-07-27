@@ -64,6 +64,14 @@ namespace RayMarchLib
             return scene;
         }
 
+        public void PreCalculate()
+        {
+            foreach (RMObject obj in Objects)
+            {
+                obj.PreCalculate();
+            }
+        }
+
         public override string ToString()
         {
             return nameof(Scene);
