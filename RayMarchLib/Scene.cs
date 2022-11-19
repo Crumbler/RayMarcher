@@ -1,10 +1,8 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Globalization;
 using System.Xml;
-using System.Xml.Serialization;
+using System.Xml.Linq;
 
 namespace RayMarchLib
 {
@@ -20,46 +18,85 @@ namespace RayMarchLib
         /// </summary>
         public float MaxDist { get; set; }
         public int MaxIterations { get; set; }
-        public List<RMObject> Objects { get; set; }
+        public List<RMObject> Objects { get; private set; }
+
+        public Dictionary<int, Material> Materials { get; private set; }
 
         public Scene()
         {
             Fov = MathF.PI / 2.0f;
             Eps = 0.001f;
-            MaxDist = 20.0f;
-            MaxIterations = 50;
+            MaxDist = 100.0f;
+            MaxIterations = 80;
 
             Objects = new List<RMObject>();
+            Materials = new Dictionary<int, Material>()
+            {
+                { -1, Material.Default }
+            };
         }
 
-        private static readonly XmlSerializer serializer;
-        public static readonly Type[] objectTypes;
         private static readonly XmlWriterSettings writerSettings = new()
         {
             Indent = true
         };
-           
-
-        static Scene()
-        {
-            objectTypes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(assembly => assembly.GetTypes())
-                .Where(t => t.IsSubclassOf(typeof(RMObject)))
-                .ToArray();
-
-            serializer = new XmlSerializer(typeof(Scene), objectTypes);
-        }
 
         public void SerializeToFile(string fileName)
         {
-            using var writer = XmlWriter.Create(fileName, writerSettings);
+            var doc = new XDocument();
 
-            serializer.Serialize(writer, this);
+            var elScene = new XElement(nameof(Scene));
+
+            doc.Add(elScene);
+
+            elScene.Add(new XElement(nameof(Fov), Utils.ToDegrees(Fov).ToString(CultureInfo.InvariantCulture)),
+                new XElement(nameof(Eps), Eps.ToString(CultureInfo.InvariantCulture)),
+                new XElement(nameof(MaxDist), MaxDist.ToString(CultureInfo.InvariantCulture)),
+                new XElement(nameof(MaxIterations), MaxIterations.ToString(CultureInfo.InvariantCulture)));
+
+            var elObjects = new XElement(nameof(Objects));
+
+            elScene.Add(elObjects);
+
+            for (int i = 0; i < Objects.Count; ++i)
+            {
+                RMObject obj = Objects[i];
+                var elObj = new XElement("Obj");
+
+                obj.Serialize(elObj);
+
+                elObjects.Add(elObj);
+            }
+
+            doc.Save(fileName);
         }
 
         public static Scene LoadFromFile(string fileName)
         {
-            var scene = serializer.Deserialize(XmlReader.Create(fileName)) as Scene;
+            var doc = XDocument.Load(fileName);
+
+            var scene = new Scene();
+
+            XElement elScene = doc.Root ?? Utils.XEmpty;
+            
+            scene.Fov = Utils.ToRadians((float)elScene.Element(nameof(Fov)));
+            scene.Eps = (float)elScene.Element(nameof(Eps));
+            scene.MaxDist = (int)elScene.Element(nameof(MaxDist));
+            scene.MaxIterations = (int)elScene.Element(nameof(MaxIterations));
+
+            XElement elObjects = elScene.Element(nameof(Objects)) ?? Utils.XEmpty;
+
+            foreach (XElement elObj in elObjects.Descendants())
+            {
+                if (elObj.Name == nameof(Sphere))
+                {
+                    Sphere sph = new();
+
+                    sph.Deserialize(elObj);
+
+                    scene.Objects.Add(sph);
+                }
+            }
 
             return scene;
         }

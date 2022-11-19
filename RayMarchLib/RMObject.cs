@@ -1,13 +1,14 @@
-﻿
-
+﻿using System.Globalization;
 using System.Numerics;
-using System.Xml.Serialization;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace RayMarchLib
 {
     public abstract class RMObject
     {
         public Vector3 Position { get; set; }
+        public int MaterialId { get; set; } = -1;
         public float Scale { get; set; } = 1.0f;
 
         /// <summary>
@@ -15,7 +16,6 @@ namespace RayMarchLib
         /// </summary>
         public Vector3 Rotation { get; set; }
 
-        [XmlIgnore]
         private Matrix4x4 InvModelMatrix { get; set; }
 
         public string Name { get; set; }
@@ -39,6 +39,43 @@ namespace RayMarchLib
         }
 
         protected abstract float GetDist(Vector3 v);
+        public virtual void Serialize(XElement el)
+        {
+            el.Name = GetType().Name;
+
+            if (!string.IsNullOrWhiteSpace(Name))
+            {
+                el.Add(new XAttribute(nameof(Name), Name));
+            }
+
+            if (MaterialId != -1)
+            {
+                el.Add(new XAttribute(nameof(MaterialId), MaterialId.ToString(CultureInfo.InvariantCulture)));
+            }
+
+            el.Add(new XAttribute(nameof(Scale), Scale.ToString(CultureInfo.InvariantCulture)));
+            el.Add(new XAttribute(nameof(Position), Utils.ToString(Position)));
+            el.Add(new XAttribute(nameof(Rotation), Utils.ToDegreesString(Rotation)));
+        }
+
+        public virtual void Deserialize(XElement elObj)
+        {
+            XAttribute attrName = elObj.Attribute(nameof(Name));
+            if (attrName is not null)
+            {
+                Name = attrName.Value;
+            }
+
+            XAttribute attrMaterialId = elObj.Attribute(nameof(MaterialId));
+            if (attrMaterialId is not null)
+            {
+                MaterialId = (int)attrMaterialId;
+            }
+
+            Position = Utils.ToVec3(elObj.Attribute(nameof(Position)).Value);
+            Rotation = Utils.ToRadiansVec3(elObj.Attribute(nameof(Rotation)).Value);
+            Scale = (float)elObj.Attribute(nameof(Scale));
+        }
 
         public override string ToString()
         {
