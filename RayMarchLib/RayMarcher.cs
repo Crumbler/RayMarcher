@@ -68,22 +68,31 @@ namespace RayMarchLib
         {
             var rayDir = new Vector3((x * 2.0f - Bitmap.Width) / Bitmap.Width,
                                      (Bitmap.Height - y * 2.0f) / Bitmap.Height,
-                                     -1.0f);
+                                     0.0f);
             
-            rayDir = Vector3.Transform(rayDir, prMatInv);
+            rayDir = Vector3.TransformNormal(rayDir, prMatInv);
+            rayDir.Z = -1.0f;
             rayDir = Vector3.Normalize(rayDir);
 
             return rayDir;
         }
 
-        private float Map(Vector3 v)
+        private float Map(Vector3 v, out RMObject obj)
         {
             float minDist = float.PositiveInfinity;
+            RMObject minObj = null;
             
             for (int i = 0; i < Scene.Objects.Count; ++i)
             {
-                minDist = MathF.Min(minDist, Scene.Objects[i].Map(v));
+                float dist = Scene.Objects[i].Map(v);
+                if (minDist > dist)
+                {
+                    minDist = dist;
+                    minObj = Scene.Objects[i];
+                }
             }
+
+            obj = minObj;
             
             return minDist;
         }
@@ -96,12 +105,13 @@ namespace RayMarchLib
 
             Vector3 rayOrigin = Vector3.Zero, pos;
             float t = 0.0f, h = 0.0f;
+            RMObject hitObj = null;
 
             for (int i = 0; i < Scene.MaxIterations; ++i)
             {
                 pos = rayOrigin + rayDir * t;
 
-                h = Map(pos);
+                h = Map(pos, out hitObj);
 
                 if (h < Scene.Eps || h > Scene.MaxDist)
                 {
@@ -113,7 +123,12 @@ namespace RayMarchLib
 
             if (h < Scene.Eps)
             {
-                c = Color.White;
+                int materialId = hitObj.MaterialId;
+                c = Scene.Materials[materialId].Color;
+            }
+            else
+            {
+                c = Material.Background.Color;
             }
 
             Bitmap.SetPixel(x, y, c);
