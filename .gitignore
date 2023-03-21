@@ -1,5 +1,6 @@
 .vs
 bin
 obj
+RayMarchTest
 *.pfx
 win10-x64.pubxml.user

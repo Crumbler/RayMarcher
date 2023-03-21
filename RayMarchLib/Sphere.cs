@@ -6,12 +6,7 @@ namespace RayMarchLib
 {
     public class Sphere : RMObject
     {
-        public float Radius { get; set; }
-
-        public Sphere()
-        {
-            Radius = 1.0f;
-        }
+        public float Radius { get; set; } = 1.0f;
 
         protected override float GetDist(Vector3 v)
         {
@@ -29,7 +24,11 @@ namespace RayMarchLib
         {
             base.Deserialize(elObj);
 
-            Radius = (float)elObj.Attribute(nameof(Radius));
+            XAttribute attrRadius = elObj.Attribute(nameof(Radius));
+            if (attrRadius is not null)
+            {
+                Radius = float.Parse(attrRadius.Value, CultureInfo.InvariantCulture);
+            }
         }
     }
 }

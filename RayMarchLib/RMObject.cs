@@ -72,9 +72,23 @@ namespace RayMarchLib
                 MaterialId = (int)attrMaterialId;
             }
 
-            Position = Utils.ToVec3(elObj.Attribute(nameof(Position)).Value);
-            Rotation = Utils.ToRadiansVec3(elObj.Attribute(nameof(Rotation)).Value);
-            Scale = (float)elObj.Attribute(nameof(Scale));
+            XAttribute attrPosition = elObj.Attribute(nameof(Position));
+            if (attrPosition is not null)
+            {
+                Position = Utils.ToVec3(attrPosition.Value);
+            }
+
+            XAttribute attrRotation = elObj.Attribute(nameof(Rotation));
+            if (attrRotation is not null)
+            {
+                Rotation = Utils.ToRadiansVec3(attrRotation.Value);
+            }
+
+            XAttribute attrScale = elObj.Attribute(nameof(Scale));
+            if (attrScale is not null)
+            {
+                Scale = (float)attrScale;
+            }
         }
 
         public override string ToString()

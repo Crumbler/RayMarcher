@@ -66,10 +66,13 @@ namespace RayMarchLib
 
         private Vector3 GetRayDir(int y, int x)
         {
-            var rayDir = new Vector3((x * 2.0f - Bitmap.Width) / Bitmap.Width,
-                                     (Bitmap.Height - y * 2.0f) / Bitmap.Height,
+            int bWidth = Bitmap.Width - 1,
+                bHeight = Bitmap.Height - 1;
+
+            var rayDir = new Vector3((x * 2.0f - bWidth) / bWidth,
+                                     (bHeight - y * 2.0f) / bHeight,
                                      0.0f);
-            
+
             rayDir = Vector3.TransformNormal(rayDir, prMatInv);
             rayDir.Z = -1.0f;
             rayDir = Vector3.Normalize(rayDir);
