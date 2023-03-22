@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using System.Numerics;
-using System.Xml;
 using System.Xml.Linq;
 
 namespace RayMarchLib
@@ -39,24 +38,6 @@ namespace RayMarchLib
         }
 
         protected abstract float GetDist(Vector3 v);
-        public virtual void Serialize(XElement el)
-        {
-            el.Name = GetType().Name;
-
-            if (!string.IsNullOrWhiteSpace(Name))
-            {
-                el.Add(new XAttribute(nameof(Name), Name));
-            }
-
-            if (MaterialId != -1)
-            {
-                el.Add(new XAttribute(nameof(MaterialId), MaterialId.ToString(CultureInfo.InvariantCulture)));
-            }
-
-            el.Add(new XAttribute(nameof(Scale), Scale.ToString(CultureInfo.InvariantCulture)));
-            el.Add(new XAttribute(nameof(Position), Utils.ToString(Position)));
-            el.Add(new XAttribute(nameof(Rotation), Utils.ToDegreesString(Rotation)));
-        }
 
         public virtual void Deserialize(XElement elObj)
         {
@@ -87,18 +68,8 @@ namespace RayMarchLib
             XAttribute attrScale = elObj.Attribute(nameof(Scale));
             if (attrScale is not null)
             {
-                Scale = (float)attrScale;
+                Scale = float.Parse(attrScale.Value, CultureInfo.InvariantCulture);
             }
-        }
-
-        public override string ToString()
-        {
-            if (string.IsNullOrWhiteSpace(Name))
-            {
-                return GetType().Name;
-            }
-
-            return Name;
         }
     }
 }

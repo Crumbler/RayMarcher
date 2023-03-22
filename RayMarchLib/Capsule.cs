@@ -6,14 +6,8 @@ namespace RayMarchLib
 {
     public class Capsule : RMObject
     {
-        public float Length { get; set; }
-        public float Radius { get; set; }
-
-        public Capsule()
-        {
-            Length = 1.0f;
-            Radius = 0.1f;
-        }
+        public float Length { get; set; } = 1.0f;
+        public float Radius { get; set; } = 0.1f;
 
         protected override float GetDist(Vector3 v)
         {
@@ -22,20 +16,21 @@ namespace RayMarchLib
             return v.Length() - Radius;
         }
 
-        public override void Serialize(XElement el)
-        {
-            base.Serialize(el);
-
-            el.Add(new XAttribute(nameof(Length), Length.ToString(CultureInfo.InvariantCulture)),
-                new XAttribute(nameof(Radius), Radius.ToString(CultureInfo.InvariantCulture)));
-        }
-
         public override void Deserialize(XElement elObj)
         {
             base.Deserialize(elObj);
 
-            Length = (float)elObj.Attribute(nameof(Length));
-            Radius = (float)elObj.Attribute(nameof(Radius));
+            XAttribute attrLength = elObj.Attribute(nameof(Length));
+            if (attrLength is not null)
+            {
+                Length = float.Parse(attrLength.Value, CultureInfo.InvariantCulture);
+            }
+
+            XAttribute attrRadius = elObj.Attribute(nameof(Radius));
+            if (attrRadius is not null)
+            {
+                Radius = float.Parse(attrRadius.Value, CultureInfo.InvariantCulture);
+            }
         }
     }
 }

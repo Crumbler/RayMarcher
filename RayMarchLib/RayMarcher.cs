@@ -19,18 +19,32 @@ namespace RayMarchLib
             Bitmap = bitmap;
         }
 
+        public RayMarcher(Scene scene)
+        {
+            Scene = scene;
+            Bitmap = new DirectBitmap(Scene.ImageWidth, Scene.ImageHeight);
+        }
+
         public RayMarcher()
         {
             Scene = new Scene();
-            Bitmap = new DirectBitmap(100, 100);
+            Bitmap = new DirectBitmap(Scene.ImageWidth, Scene.ImageHeight);
         }
 
         public void CalculateFrame(int threads = 1)
         {
+            if (Scene.ImageWidth != Bitmap.Width || Scene.ImageHeight != Bitmap.Height)
+            {
+                Bitmap.Dispose();
+                Bitmap = new DirectBitmap(Scene.ImageWidth, Scene.ImageHeight);
+            }
+
             Scene.PreCalculate();
 
             float aspectRatio = (float)Bitmap.Width / Bitmap.Height;
-            prMatInv = Matrix4x4.CreatePerspectiveFieldOfView(Scene.Fov, aspectRatio, 0.1f, 1000.0f);
+            const float nearPlane = 0.1f, farPlane = 1000f;
+
+            prMatInv = Matrix4x4.CreatePerspectiveFieldOfView(Scene.Fov, aspectRatio, nearPlane, farPlane);
             Matrix4x4.Invert(prMatInv, out prMatInv);
             
             int rowsPerThread = Bitmap.Height / threads;
@@ -95,14 +109,14 @@ namespace RayMarchLib
                 }
             }
 
-            obj = minObj;
+            obj = minObj!;
             
             return minDist;
         }
 
         private void CalculatePixel(int y, int x)
         {
-            var c = Color.Black;
+            Color c;
 
             Vector3 rayDir = GetRayDir(y, x);
 
@@ -126,7 +140,7 @@ namespace RayMarchLib
 
             if (h < Scene.Eps)
             {
-                int materialId = hitObj.MaterialId;
+                int materialId = hitObj!.MaterialId;
                 c = Scene.Materials[materialId].Color;
             }
             else

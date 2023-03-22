@@ -8,6 +8,8 @@ namespace RayMarchLib
 {
     public class Scene
     {
+        public int ImageWidth { get; set; }
+        public int ImageHeight { get; set; }
         /// <summary>
         /// Camera Field of View
         /// </summary>
@@ -24,6 +26,8 @@ namespace RayMarchLib
 
         public Scene()
         {
+            ImageWidth = 100;
+            ImageHeight = 100;
             Fov = MathF.PI / 2.0f;
             Eps = 0.001f;
             MaxDist = 100.0f;
@@ -36,41 +40,6 @@ namespace RayMarchLib
             };
         }
 
-        private static readonly XmlWriterSettings writerSettings = new()
-        {
-            Indent = true
-        };
-
-        public void SerializeToFile(string fileName)
-        {
-            var doc = new XDocument();
-
-            var elScene = new XElement(nameof(Scene));
-
-            doc.Add(elScene);
-
-            elScene.Add(new XElement(nameof(Fov), Utils.ToDegrees(Fov).ToString(CultureInfo.InvariantCulture)),
-                new XElement(nameof(Eps), Eps.ToString(CultureInfo.InvariantCulture)),
-                new XElement(nameof(MaxDist), MaxDist.ToString(CultureInfo.InvariantCulture)),
-                new XElement(nameof(MaxIterations), MaxIterations.ToString(CultureInfo.InvariantCulture)));
-
-            var elObjects = new XElement(nameof(Objects));
-
-            elScene.Add(elObjects);
-
-            for (int i = 0; i < Objects.Count; ++i)
-            {
-                RMObject obj = Objects[i];
-                var elObj = new XElement("Obj");
-
-                obj.Serialize(elObj);
-
-                elObjects.Add(elObj);
-            }
-
-            doc.Save(fileName);
-        }
-
         public static Scene LoadFromFile(string fileName)
         {
             var doc = XDocument.Load(fileName);
@@ -78,9 +47,11 @@ namespace RayMarchLib
             var scene = new Scene();
 
             XElement elScene = doc.Root ?? Utils.XEmpty;
-            
-            scene.Fov = Utils.ToRadians((float)elScene.Element(nameof(Fov)));
-            scene.Eps = (float)elScene.Element(nameof(Eps));
+
+            scene.ImageWidth = (int)elScene.Element(nameof(ImageWidth));
+            scene.ImageHeight = (int)elScene.Element(nameof(ImageHeight));
+            scene.Fov = Utils.ToRadians(float.Parse(elScene.Element(nameof(Fov))!.Value, CultureInfo.InvariantCulture));
+            scene.Eps = float.Parse(elScene.Element(nameof(Eps))!.Value, CultureInfo.InvariantCulture);
             scene.MaxDist = (int)elScene.Element(nameof(MaxDist));
             scene.MaxIterations = (int)elScene.Element(nameof(MaxIterations));
 
@@ -107,11 +78,6 @@ namespace RayMarchLib
             {
                 obj.PreCalculate();
             }
-        }
-
-        public override string ToString()
-        {
-            return nameof(Scene);
         }
     }
 }

@@ -22,15 +22,5 @@ namespace RayMarchLib
         {
             Color = Color.Black
         };
-
-        public override string ToString()
-        {
-            if (string.IsNullOrWhiteSpace(Name))
-            {
-                return GetType().Name;
-            }
-
-            return Name;
-        }
     }
 }

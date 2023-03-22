@@ -13,13 +13,6 @@ namespace RayMarchLib
             return v.Length() - Radius;
         }
 
-        public override void Serialize(XElement el)
-        {
-            base.Serialize(el);
-
-            el.Add(new XAttribute(nameof(Radius), Radius.ToString(CultureInfo.InvariantCulture)));
-        }
-
         public override void Deserialize(XElement elObj)
         {
             base.Deserialize(elObj);
