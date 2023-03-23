@@ -59,14 +59,13 @@ namespace RayMarchLib
 
             foreach (XElement elObj in elObjects.Descendants())
             {
-                if (elObj.Name == nameof(Sphere))
-                {
-                    Sphere sph = new();
+                Type objType = Type.GetType($"RayMarchLib.{elObj.Name}", true);
 
-                    sph.Deserialize(elObj);
+                RMObject obj = (RMObject)Activator.CreateInstance(objType);
 
-                    scene.Objects.Add(sph);
-                }
+                obj.Deserialize(elObj);
+
+                scene.Objects.Add(obj);
             }
 
             return scene;
