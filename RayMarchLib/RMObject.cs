@@ -29,7 +29,8 @@ namespace RayMarchLib
         public void PreCalculate()
         {
             var m = Matrix4x4.CreateScale(Scale) * 
-                    Matrix4x4.CreateFromYawPitchRoll(Rotation.X, Rotation.Y, Rotation.Z) * 
+                // Rotations around the X, Y and Z axes
+                    Matrix4x4.CreateFromYawPitchRoll(Rotation.Y, Rotation.X, Rotation.Z) * 
                     Matrix4x4.CreateTranslation(Position);
 
             Matrix4x4.Invert(m, out m);
