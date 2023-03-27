@@ -50,12 +50,12 @@ namespace RayMarchLib
 
             scene.ImageWidth = (int)elScene.Element(nameof(ImageWidth));
             scene.ImageHeight = (int)elScene.Element(nameof(ImageHeight));
-            scene.Fov = Utils.ToRadians(float.Parse(elScene.Element(nameof(Fov))!.Value, CultureInfo.InvariantCulture));
-            scene.Eps = float.Parse(elScene.Element(nameof(Eps))!.Value, CultureInfo.InvariantCulture);
+            scene.Fov = Utils.ToRadians(Utils.ParseFloat(elScene.Element(nameof(Fov)).Value));
+            scene.Eps = Utils.ParseFloat(elScene.Element(nameof(Eps)).Value);
             scene.MaxDist = (int)elScene.Element(nameof(MaxDist));
             scene.MaxIterations = (int)elScene.Element(nameof(MaxIterations));
 
-            XElement elObjects = elScene.Element(nameof(Objects)) ?? Utils.XEmpty;
+            XElement elObjects = elScene.Element(nameof(Objects));
 
             foreach (XElement elObj in elObjects.Descendants())
             {

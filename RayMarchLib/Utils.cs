@@ -47,11 +47,11 @@ namespace RayMarchLib
         public static Vector3 ToRadiansVec3(string s)
         {
             int ind = s.IndexOf(' ');
-            var x = float.Parse(s[0..ind], CultureInfo.InvariantCulture);
+            float x = ParseFloat(s[0..ind]);
             x = ToRadians(x);
             int ind2 = s.IndexOf(' ', ind + 1);
-            float y = float.Parse(s[(ind + 1)..ind2], CultureInfo.InvariantCulture),
-                  z = float.Parse(s[(ind2 + 1)..], CultureInfo.InvariantCulture);
+            float y = ParseFloat(s[(ind + 1)..ind2]),
+                  z = ParseFloat(s[(ind2 + 1)..]);
 
             y = ToRadians(y);
             z = ToRadians(z);
@@ -62,12 +62,17 @@ namespace RayMarchLib
         public static Vector3 ToVec3(string s)
         {
             int ind = s.IndexOf(' ');
-            float x = float.Parse(s[0..ind], CultureInfo.InvariantCulture);
+            float x = ParseFloat(s[0..ind]);
             int ind2 = s.IndexOf(' ', ind + 1);
-            float y = float.Parse(s[(ind + 1)..ind2], CultureInfo.InvariantCulture),
-                  z = float.Parse(s[(ind2 + 1)..], CultureInfo.InvariantCulture);
+            float y = ParseFloat(s[(ind + 1)..ind2]),
+                  z = ParseFloat(s[(ind2 + 1)..]);
 
             return new Vector3(x, y, z);
+        }
+
+        public static float ParseFloat(string s)
+        {
+            return float.Parse(s, CultureInfo.InvariantCulture);
         }
     }
 }

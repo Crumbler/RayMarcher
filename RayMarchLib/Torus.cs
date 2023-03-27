@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Xml.Linq;
 
 namespace RayMarchLib
@@ -23,13 +22,13 @@ namespace RayMarchLib
             XAttribute attrInnerRadius = elObj.Attribute(nameof(InnerRadius));
             if (attrInnerRadius is not null)
             {
-                InnerRadius = float.Parse(attrInnerRadius.Value, CultureInfo.InvariantCulture);
+                InnerRadius = Utils.ParseFloat(attrInnerRadius.Value);
             }
 
             XAttribute attrOuterRadius = elObj.Attribute(nameof(OuterRadius));
             if (attrOuterRadius is not null)
             {
-                OuterRadius = float.Parse(attrOuterRadius.Value, CultureInfo.InvariantCulture);
+                OuterRadius = Utils.ParseFloat(attrOuterRadius.Value);
             }
         }
     }

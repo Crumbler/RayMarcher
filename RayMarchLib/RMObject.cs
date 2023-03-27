@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Xml.Linq;
 
 namespace RayMarchLib
@@ -11,7 +10,7 @@ namespace RayMarchLib
         public float Scale { get; set; } = 1.0f;
 
         /// <summary>
-        /// The X, Y and Z components correspond to the Yaw, Pitch and Roll
+        /// Rotation around the X, Y and Z axes
         /// </summary>
         public Vector3 Rotation { get; set; }
 
@@ -69,7 +68,7 @@ namespace RayMarchLib
             XAttribute attrScale = elObj.Attribute(nameof(Scale));
             if (attrScale is not null)
             {
-                Scale = float.Parse(attrScale.Value, CultureInfo.InvariantCulture);
+                Scale = Utils.ParseFloat(attrScale.Value);
             }
         }
     }
