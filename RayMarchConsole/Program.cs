@@ -1,32 +1,51 @@
-﻿
-using System;
+﻿using System;
 using RayMarchLib;
 using System.Drawing.Imaging;
-using System.Numerics;
+using System.IO;
 
 namespace RayMarchConsole
 {
     public static class Program
     {
-        public static void Main()
+        public static void Main(string[] args)
         {
-            var bmp = new DirectBitmap(1280, 720);
-
-            var scene = new Scene();
-
-            var s1 = new Sphere()
+            if (args.Length != 1)
             {
-                Radius = 0.5f,
-                Position = new Vector3(0, -1, -3)
-            };
+                Console.WriteLine("Exactly one argument must be specified.");
+                Console.ReadKey();
+                return;
+            }
 
-            scene.Objects.Add(s1);
+            string path = args[0];
 
-            var marcher = new RayMarcher(scene, bmp);
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                Console.WriteLine("Empty path specified.");
+                Console.ReadKey();
+                return;
+            }
 
-            marcher.CalculateFrame(4);
+            RayMarcher marcher;
+            try
+            {
+                var scene = Scene.LoadFromFile(path);
 
-            marcher.Bitmap.Bitmap.Save("img.png", ImageFormat.Png);
+                marcher = new RayMarcher(scene);
+
+                marcher.CalculateFrame(4);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error:\n{e.Message}");
+                Console.ReadKey();
+                return;
+            }
+
+            string imgPath = Path.ChangeExtension(path, "png");
+            marcher.Bitmap.Bitmap.Save(imgPath, ImageFormat.Png);
+
+            Console.WriteLine("Rendering complete.");
+            Console.ReadKey();
         }
     }
 }
