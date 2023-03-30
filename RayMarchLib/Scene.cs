@@ -31,7 +31,7 @@ namespace RayMarchLib
             ImageHeight = 100;
             Fov = MathF.PI / 2.0f;
             Eps = 0.001f;
-            MaxDist = 100.0f;
+            MaxDist = float.PositiveInfinity;
             MaxIterations = 80;
 
             Objects = new List<RMObject>();
@@ -51,7 +51,13 @@ namespace RayMarchLib
             scene.ImageHeight = (int)elScene.Element(nameof(ImageHeight));
             scene.Fov = Utils.ToRadians(Utils.ParseFloat(elScene.Element(nameof(Fov)).Value));
             scene.Eps = Utils.ParseFloat(elScene.Element(nameof(Eps)).Value);
-            scene.MaxDist = (int)elScene.Element(nameof(MaxDist));
+
+            XElement elMaxDist = elScene.Element(nameof(MaxDist));
+            if (elMaxDist is not null)
+            {
+                scene.MaxDist = Utils.ParseFloat(elMaxDist.Value);
+            }
+
             scene.MaxIterations = (int)elScene.Element(nameof(MaxIterations));
 
             XElement elCamera = elScene.Element(nameof(Camera));
@@ -69,6 +75,18 @@ namespace RayMarchLib
 
                     scene.Materials.Add(elMaterial.Name.LocalName, m);
                 }
+            }
+
+            if (scene.Materials.ContainsKey(nameof(Material.Background)))
+            {
+                Material.Background = scene.Materials[nameof(Material.Background)];
+                scene.Materials.Remove(nameof(Material.Background));
+            }
+
+            if (scene.Materials.ContainsKey(nameof(Material.Default)))
+            {
+                Material.Default = scene.Materials[nameof(Material.Default)];
+                scene.Materials.Remove(nameof(Material.Default));
             }
 
             XElement elObjects = elScene.Element(nameof(Objects));

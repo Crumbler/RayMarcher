@@ -12,7 +12,7 @@ namespace RayMarchLib
             Color = Vector3.One;
         }
 
-        public static readonly Material
+        public static Material
         Default = new(),
         Background = new()
         {
