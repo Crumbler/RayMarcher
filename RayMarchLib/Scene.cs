@@ -21,6 +21,7 @@ namespace RayMarchLib
         public float MaxDist { get; set; }
         public int MaxIterations { get; set; }
         public List<RMObject> Objects { get; private set; }
+        public Camera Camera { get; set; }
 
         public Dictionary<string, Material> Materials { get; private set; }
 
@@ -34,6 +35,7 @@ namespace RayMarchLib
             MaxIterations = 80;
 
             Objects = new List<RMObject>();
+            Camera = new Camera();
             Materials = new Dictionary<string, Material>();
         }
 
@@ -52,8 +54,13 @@ namespace RayMarchLib
             scene.MaxDist = (int)elScene.Element(nameof(MaxDist));
             scene.MaxIterations = (int)elScene.Element(nameof(MaxIterations));
 
-            XElement elMaterials = elScene.Element(nameof(Materials));
+            XElement elCamera = elScene.Element(nameof(Camera));
+            if (elCamera is not null)
+            {
+                scene.Camera = Camera.Deserialize(elCamera);
+            }
 
+            XElement elMaterials = elScene.Element(nameof(Materials));
             if (elMaterials is not null)
             {
                 foreach (XElement elMaterial in elMaterials.Descendants())

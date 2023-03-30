@@ -11,7 +11,8 @@ namespace RayMarchLib
         public DirectBitmap Bitmap { get; set; }
         public Bitmap ActualBitmap { get => Bitmap.Bitmap; }
 
-        private Matrix4x4 prMatInv;
+        private Matrix4x4 projMatInv, viewMatInv;
+        private Vector3 RayOrigin { get; set; }
 
         public RayMarcher(Scene scene, DirectBitmap bitmap)
         {
@@ -44,8 +45,13 @@ namespace RayMarchLib
             float aspectRatio = (float)Bitmap.Width / Bitmap.Height;
             const float nearPlane = 0.1f, farPlane = 1000f;
 
-            prMatInv = Matrix4x4.CreatePerspectiveFieldOfView(Scene.Fov, aspectRatio, nearPlane, farPlane);
-            Matrix4x4.Invert(prMatInv, out prMatInv);
+            viewMatInv = Matrix4x4.CreateLookAt(Scene.Camera.Position, Scene.Camera.Target, Vector3.UnitY);
+            Matrix4x4.Invert(viewMatInv, out viewMatInv);
+
+            RayOrigin = Vector3.Transform(Vector3.Zero, viewMatInv);
+
+            projMatInv = Matrix4x4.CreatePerspectiveFieldOfView(Scene.Fov, aspectRatio, nearPlane, farPlane);
+            Matrix4x4.Invert(projMatInv, out projMatInv);
             
             int rowsPerThread = Bitmap.Height / threads;
 
@@ -87,8 +93,9 @@ namespace RayMarchLib
                                      (bHeight - y * 2.0f) / bHeight,
                                      0.0f);
 
-            rayDir = Vector3.TransformNormal(rayDir, prMatInv);
+            rayDir = Vector3.Transform(rayDir, projMatInv);
             rayDir.Z = -1.0f;
+            rayDir = Vector3.TransformNormal(rayDir, viewMatInv);
             rayDir = Vector3.Normalize(rayDir);
 
             return rayDir;
@@ -118,7 +125,7 @@ namespace RayMarchLib
         {
             Vector3 c, rayDir = GetRayDir(y, x);
 
-            Vector3 rayOrigin = Vector3.Zero, pos;
+            Vector3 rayOrigin = RayOrigin, pos;
             float t = 0.0f, h = 0.0f;
             RMObject hitObj = null;
 
