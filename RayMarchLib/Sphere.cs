@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Collections.Generic;
+using System.Numerics;
 using System.Xml.Linq;
 
 namespace RayMarchLib
@@ -12,9 +13,9 @@ namespace RayMarchLib
             return v.Length() - Radius;
         }
 
-        public override void Deserialize(XElement elObj)
+        public override void Deserialize(Dictionary<string, Material> materials, XElement elObj)
         {
-            base.Deserialize(elObj);
+            base.Deserialize(materials, elObj);
 
             XAttribute attrRadius = elObj.Attribute(nameof(Radius));
             if (attrRadius is not null)

@@ -109,16 +109,14 @@ namespace RayMarchLib
                 }
             }
 
-            obj = minObj!;
+            obj = minObj;
             
             return minDist;
         }
 
         private void CalculatePixel(int y, int x)
         {
-            Color c;
-
-            Vector3 rayDir = GetRayDir(y, x);
+            Vector3 c, rayDir = GetRayDir(y, x);
 
             Vector3 rayOrigin = Vector3.Zero, pos;
             float t = 0.0f, h = 0.0f;
@@ -140,15 +138,16 @@ namespace RayMarchLib
 
             if (h < Scene.Eps)
             {
-                int materialId = hitObj!.MaterialId;
-                c = Scene.Materials[materialId].Color;
+                Material m = hitObj.Material ?? Material.Default;
+
+                c = m.Color;
             }
             else
             {
                 c = Material.Background.Color;
             }
 
-            Bitmap.SetPixel(x, y, c);
+            Bitmap.SetPixel(x, y, c.ToColor());
         }
     }
 }

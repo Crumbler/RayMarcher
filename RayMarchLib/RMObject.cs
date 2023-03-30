@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Collections.Generic;
+using System.Numerics;
 using System.Xml.Linq;
 
 namespace RayMarchLib
@@ -6,7 +7,7 @@ namespace RayMarchLib
     public abstract class RMObject
     {
         public Vector3 Position { get; set; }
-        public int MaterialId { get; set; } = -1;
+        public Material Material { get; set; }
         public float Scale { get; set; } = 1.0f;
 
         /// <summary>
@@ -39,7 +40,7 @@ namespace RayMarchLib
 
         protected abstract float GetDist(Vector3 v);
 
-        public virtual void Deserialize(XElement elObj)
+        public virtual void Deserialize(Dictionary<string, Material> materials, XElement elObj)
         {
             XAttribute attrName = elObj.Attribute(nameof(Name));
             if (attrName is not null)
@@ -47,10 +48,10 @@ namespace RayMarchLib
                 Name = attrName.Value;
             }
 
-            XAttribute attrMaterialId = elObj.Attribute(nameof(MaterialId));
-            if (attrMaterialId is not null)
+            XAttribute attrMaterialName = elObj.Attribute(nameof(Material));
+            if (attrMaterialName is not null)
             {
-                MaterialId = (int)attrMaterialId;
+                Material = materials[attrMaterialName.Value];
             }
 
             XAttribute attrPosition = elObj.Attribute(nameof(Position));

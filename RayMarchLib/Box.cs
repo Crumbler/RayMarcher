@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Xml.Linq;
 
@@ -15,9 +16,9 @@ namespace RayMarchLib
                 MathF.Min(MathF.Max(q.X, Math.Max(q.Y, q.Z)), 0.0f);
         }
 
-        public override void Deserialize(XElement elObj)
+        public override void Deserialize(Dictionary<string, Material> materials, XElement elObj)
         {
-            base.Deserialize(elObj);
+            base.Deserialize(materials, elObj);
 
             XAttribute attrSize = elObj.Attribute(nameof(Size));
             if (attrSize is not null)

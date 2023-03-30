@@ -22,7 +22,7 @@ namespace RayMarchLib
         public int MaxIterations { get; set; }
         public List<RMObject> Objects { get; private set; }
 
-        public Dictionary<int, Material> Materials { get; private set; }
+        public Dictionary<string, Material> Materials { get; private set; }
 
         public Scene()
         {
@@ -34,10 +34,7 @@ namespace RayMarchLib
             MaxIterations = 80;
 
             Objects = new List<RMObject>();
-            Materials = new Dictionary<int, Material>()
-            {
-                { -1, Material.Default }
-            };
+            Materials = new Dictionary<string, Material>();
         }
 
         public static Scene LoadFromFile(string fileName)
@@ -46,7 +43,7 @@ namespace RayMarchLib
 
             var scene = new Scene();
 
-            XElement elScene = doc.Root ?? Utils.XEmpty;
+            XElement elScene = doc.Root;
 
             scene.ImageWidth = (int)elScene.Element(nameof(ImageWidth));
             scene.ImageHeight = (int)elScene.Element(nameof(ImageHeight));
@@ -54,6 +51,18 @@ namespace RayMarchLib
             scene.Eps = Utils.ParseFloat(elScene.Element(nameof(Eps)).Value);
             scene.MaxDist = (int)elScene.Element(nameof(MaxDist));
             scene.MaxIterations = (int)elScene.Element(nameof(MaxIterations));
+
+            XElement elMaterials = elScene.Element(nameof(Materials));
+
+            if (elMaterials is not null)
+            {
+                foreach (XElement elMaterial in elMaterials.Descendants())
+                {
+                    Material m = Material.ParseMaterial(elMaterial);
+
+                    scene.Materials.Add(elMaterial.Name.LocalName, m);
+                }
+            }
 
             XElement elObjects = elScene.Element(nameof(Objects));
 
@@ -63,7 +72,7 @@ namespace RayMarchLib
 
                 RMObject obj = (RMObject)Activator.CreateInstance(objType);
 
-                obj.Deserialize(elObj);
+                obj.Deserialize(scene.Materials, elObj);
 
                 scene.Objects.Add(obj);
             }

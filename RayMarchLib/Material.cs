@@ -1,26 +1,35 @@
-﻿using System.Drawing;
+﻿using System.Numerics;
+using System.Xml.Linq;
 
 namespace RayMarchLib
 {
     public class Material
     {
-        public Color Color { get; set; }
-
-        public string Name { get; set; }
+        public Vector3 Color { get; set; }
 
         public Material()
         {
-            Color = Color.White;
+            Color = Vector3.One;
         }
 
         public static readonly Material
-        Default = new()
-        {
-            Name = "Default"
-        },
+        Default = new(),
         Background = new()
         {
-            Color = Color.Black
+            Color = Vector3.Zero
         };
+
+        public static Material ParseMaterial(XElement el)
+        {
+            var m = new Material();
+
+            XAttribute attrColor = el.Attribute(nameof(Color));
+            if (attrColor is not null)
+            {
+                m.Color = Utils.ToVec3(attrColor.Value);
+            }
+
+            return m;
+        }
     }
 }

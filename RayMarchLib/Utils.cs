@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Drawing;
 using System.Globalization;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 
 namespace RayMarchLib
@@ -68,6 +70,11 @@ namespace RayMarchLib
                   z = ParseFloat(s[(ind2 + 1)..]);
 
             return new Vector3(x, y, z);
+        }
+
+        public static Color ToColor(this Vector3 c)
+        {
+            return Color.FromArgb((int)(c.X * 255f), (int)(c.Y * 255f), (int)(c.Z * 255f));
         }
 
         public static float ParseFloat(string s)
