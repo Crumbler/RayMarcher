@@ -101,10 +101,9 @@ namespace RayMarchLib
             return rayDir;
         }
 
-        private float Map(Vector3 v, out RMObject obj)
+        private float Map(Vector3 v)
         {
             float minDist = float.PositiveInfinity;
-            RMObject minObj = null;
             
             for (int i = 0; i < Scene.Objects.Count; ++i)
             {
@@ -112,28 +111,42 @@ namespace RayMarchLib
                 if (minDist > dist)
                 {
                     minDist = dist;
-                    minObj = Scene.Objects[i];
+                }
+            }
+            
+            return minDist;
+        }
+
+        private HitResult GetHit(Vector3 v)
+        {
+            float minDist = float.PositiveInfinity;
+            RMObject hitObj = null;
+
+            for (int i = 0; i < Scene.Objects.Count; ++i)
+            {
+                float dist = Scene.Objects[i].Map(v);
+                if (minDist > dist)
+                {
+                    minDist = dist;
+                    hitObj = Scene.Objects[i];
                 }
             }
 
-            obj = minObj;
-            
-            return minDist;
+            return hitObj.MapHit(v);
         }
 
         private void CalculatePixel(int y, int x)
         {
             Vector3 c, rayDir = GetRayDir(y, x);
 
-            Vector3 rayOrigin = RayOrigin, pos;
+            Vector3 rayOrigin = RayOrigin, pos = rayOrigin;
             float t = 0.0f, h = 0.0f;
-            RMObject hitObj = null;
 
             for (int i = 0; i < Scene.MaxIterations; ++i)
             {
                 pos = rayOrigin + rayDir * t;
 
-                h = Map(pos, out hitObj);
+                h = Map(pos);
 
                 if (h < Scene.Eps || h > Scene.MaxDist)
                 {
@@ -145,7 +158,9 @@ namespace RayMarchLib
 
             if (h < Scene.Eps)
             {
-                Material m = hitObj.Material ?? Material.Default;
+                HitResult hit = GetHit(pos);
+
+                Material m = hit.material ?? Material.Default;
 
                 c = m.Color;
             }

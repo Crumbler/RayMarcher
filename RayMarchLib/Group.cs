@@ -23,6 +23,31 @@ namespace RayMarchLib
             return minDist;
         }
 
+        protected override HitResult GetHit(Vector3 v)
+        {
+            float minDist = float.PositiveInfinity;
+            RMObject hitObj = null;
+
+            for (int i = 0; i < objects.Count; ++i)
+            {
+                float dist = objects[i].Map(v);
+                if (minDist > dist)
+                {
+                    minDist = dist;
+                    hitObj = objects[i];
+                }
+            }
+
+            var hit = hitObj.MapHit(v);
+
+            if (hit.material is null)
+            {
+                hit.material = this.Material;
+            }
+
+            return hit;
+        }
+
         public void AddObject(RMObject obj)
         {
             objects.Add(obj);
@@ -42,7 +67,7 @@ namespace RayMarchLib
         {
             descObjects.Push(null);
 
-            foreach (XElement elDescObj in elObj.Descendants())
+            foreach (XElement elDescObj in elObj.Elements())
             {
                 descObjects.Push(elDescObj);
             }

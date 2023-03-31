@@ -39,6 +39,25 @@ namespace RayMarchLib
 
         protected abstract float GetDist(Vector3 v);
 
+        public HitResult MapHit(Vector3 v)
+        {
+            v = Vector3.Transform(v, InvModelMatrix);
+
+            var hit = GetHit(v);
+            hit.distance *= Scale;
+
+            return hit;
+        }
+
+        protected virtual HitResult GetHit(Vector3 v)
+        {
+            return new HitResult()
+            {
+                distance = GetDist(v),
+                material = Material
+            };
+        }
+
         public virtual void Deserialize(Dictionary<string, Material> materials, XElement elObj)
         {
             XAttribute attrName = elObj.Attribute(nameof(Name));

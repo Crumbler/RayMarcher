@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Xml;
 using System.Xml.Linq;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace RayMarchLib
 {
@@ -87,7 +84,7 @@ namespace RayMarchLib
 
         private static void LoadMaterials(Scene scene, XElement elMaterials)
         {
-            foreach (XElement elMaterial in elMaterials.Descendants())
+            foreach (XElement elMaterial in elMaterials.Elements())
             {
                 Material m = Material.ParseMaterial(elMaterial);
 
@@ -114,7 +111,7 @@ namespace RayMarchLib
 
             IRMGroup currGroup = null;
 
-            foreach (XElement elObj in elObjects.Descendants())
+            foreach (XElement elObj in elObjects.Elements())
             {
                 descObjects.Push(elObj);
             }

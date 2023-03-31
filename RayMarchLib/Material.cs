@@ -31,5 +31,10 @@ namespace RayMarchLib
 
             return m;
         }
+
+        public override string ToString()
+        {
+            return Color.ToString();
+        }
     }
 }
