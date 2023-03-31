@@ -26,10 +26,9 @@ namespace RayMarchLib
             return GetDist(v) * Scale;
         }
 
-        public void PreCalculate()
+        public virtual void PreCalculate()
         {
             var m = Matrix4x4.CreateScale(Scale) * 
-                // Rotations around the X, Y and Z axes
                     Matrix4x4.CreateFromYawPitchRoll(Rotation.Y, Rotation.X, Rotation.Z) * 
                     Matrix4x4.CreateTranslation(Position);
 

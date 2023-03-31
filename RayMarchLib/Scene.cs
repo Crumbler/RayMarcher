@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Xml;
 using System.Xml.Linq;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace RayMarchLib
 {
@@ -47,6 +48,23 @@ namespace RayMarchLib
 
             XElement elScene = doc.Root;
 
+            LoadParams(scene, elScene);
+
+            XElement elMaterials = elScene.Element(nameof(Materials));
+            if (elMaterials is not null)
+            {
+                LoadMaterials(scene, elMaterials);
+            }
+
+            XElement elObjects = elScene.Element(nameof(Objects));
+
+            LoadObjects(scene, elObjects);
+
+            return scene;
+        }
+
+        private static void LoadParams(Scene scene, XElement elScene)
+        {
             scene.ImageWidth = (int)elScene.Element(nameof(ImageWidth));
             scene.ImageHeight = (int)elScene.Element(nameof(ImageHeight));
             scene.Fov = Utils.ToRadians(Utils.ParseFloat(elScene.Element(nameof(Fov)).Value));
@@ -65,16 +83,15 @@ namespace RayMarchLib
             {
                 scene.Camera = Camera.Deserialize(elCamera);
             }
+        }
 
-            XElement elMaterials = elScene.Element(nameof(Materials));
-            if (elMaterials is not null)
+        private static void LoadMaterials(Scene scene, XElement elMaterials)
+        {
+            foreach (XElement elMaterial in elMaterials.Descendants())
             {
-                foreach (XElement elMaterial in elMaterials.Descendants())
-                {
-                    Material m = Material.ParseMaterial(elMaterial);
+                Material m = Material.ParseMaterial(elMaterial);
 
-                    scene.Materials.Add(elMaterial.Name.LocalName, m);
-                }
+                scene.Materials.Add(elMaterial.Name.LocalName, m);
             }
 
             if (scene.Materials.ContainsKey(nameof(Material.Background)))
@@ -88,21 +105,68 @@ namespace RayMarchLib
                 Material.Default = scene.Materials[nameof(Material.Default)];
                 scene.Materials.Remove(nameof(Material.Default));
             }
+        }
 
-            XElement elObjects = elScene.Element(nameof(Objects));
+        private static void LoadObjects(Scene scene, XElement elObjects)
+        {
+            Stack<IRMGroup> groups = new();
+            Stack<XElement> descObjects = new();
+
+            IRMGroup currGroup = null;
 
             foreach (XElement elObj in elObjects.Descendants())
             {
+                descObjects.Push(elObj);
+            }
+
+            while (descObjects.Count != 0)
+            {
+                XElement elObj = descObjects.Pop();
+
+                // Stop deserializing group
+                if (elObj is null)
+                {
+                    // Return to adding to scene
+                    if (groups.Count == 0)
+                    {
+                        currGroup = null;
+                    }
+                    else
+                    {
+                        // Return to parent object
+                        currGroup = groups.Pop();
+                    }
+
+                    continue;
+                }
+
                 Type objType = Type.GetType($"RayMarchLib.{elObj.Name}", true);
 
                 RMObject obj = (RMObject)Activator.CreateInstance(objType);
 
                 obj.Deserialize(scene.Materials, elObj);
 
-                scene.Objects.Add(obj);
-            }
+                if (currGroup is null)
+                {
+                    scene.Objects.Add(obj);
+                }
+                else
+                {
+                    currGroup.AddObject(obj);
+                }
 
-            return scene;
+                if (obj is IRMGroup group)
+                {
+                    if (currGroup is not null)
+                    {
+                        groups.Push(currGroup);
+                    }
+
+                    currGroup = group;
+
+                    group.DeserializeGroup(elObj, descObjects);
+                }
+            }
         }
 
         public void PreCalculate()
