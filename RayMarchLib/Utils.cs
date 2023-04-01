@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Globalization;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 
 namespace RayMarchLib
@@ -72,9 +71,15 @@ namespace RayMarchLib
             return new Vector3(x, y, z);
         }
 
+        public static Vector3 Pow(Vector3 v, float x) => new(MathF.Pow(v.X, x),
+                MathF.Pow(v.Y, x),
+                MathF.Pow(v.Z, x));
+
         public static Color ToColor(this Vector3 c)
         {
-            return Color.FromArgb((int)(c.X * 255f), (int)(c.Y * 255f), (int)(c.Z * 255f));
+            var v = Vector3.Clamp(c, Vector3.Zero, Vector3.One);
+
+            return Color.FromArgb((int)(v.X * 255f), (int)(v.Y * 255f), (int)(v.Z * 255f));
         }
 
         public static float ParseFloat(string s)

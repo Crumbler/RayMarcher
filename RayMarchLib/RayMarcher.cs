@@ -117,6 +117,19 @@ namespace RayMarchLib
             return minDist;
         }
 
+        private Vector3 GetNormal(Vector3 v)
+        {
+            const float h = 0.0001f;
+            Vector3 res;
+
+            res = new Vector3(1, -1, -1) * Map(v + new Vector3(1, -1, -1) * h) +
+                new Vector3(-1, -1, 1) * Map(v + new Vector3(-1, -1, 1) * h) +
+                new Vector3(-1, 1, -1) * Map(v + new Vector3(-1, 1, -1) * h) +
+                new Vector3(1, 1, 1) * Map(v + new Vector3(1, 1, 1) * h);
+
+            return Vector3.Normalize(res);
+        }
+
         private HitResult GetHit(Vector3 v)
         {
             float minDist = float.PositiveInfinity;
@@ -134,6 +147,61 @@ namespace RayMarchLib
 
             return hitObj.MapHit(v);
         }
+
+        private Vector3 CalcPhongColor(Vector3 v, Material m, Vector3 rayDir)
+        {
+            Vector3 n = GetNormal(v);
+            Vector3 ambient = Vector3.Zero, diffuse = Vector3.Zero,
+                    specular = Vector3.Zero;
+
+            for (int i = 0; i < Scene.Lights.Count; ++i)
+            {
+                Light l = Scene.Lights[i];
+
+                switch (l.LightType)
+                {
+                    case LightType.Directional:
+                        Vector3 posToLight = -l.Direction;
+                        float diff = MathF.Max(0f, Vector3.Dot(posToLight, n));
+
+                        diffuse += l.Color * diff;
+
+                        if (diff > 0f)
+                        {
+                            var reflDir = Vector3.Reflect(posToLight, n);
+                            float shineFactor = Vector3.Dot(reflDir, rayDir);
+                            shineFactor = MathF.Max(0f, shineFactor);
+
+                            specular += l.Color * MathF.Pow(shineFactor, m.Specular);
+                        }
+
+                        break;
+
+                    case LightType.Point:
+
+                        break;
+                }
+
+                ambient += l.Color;
+            }
+
+            ambient *= m.Ambient;
+            diffuse *= m.Diffuse;
+
+            return (ambient + diffuse + specular) * m.Color;
+        }
+
+        private Vector3 CalcBlinnPhongColor(Vector3 v, Material m)
+        {
+            return Vector3.Zero;
+        }
+
+        private Vector3 GetPointColor(Vector3 v, Material m, Vector3 rayDir) => Scene.LightingType switch
+        {
+            LightingType.Phong => CalcPhongColor(v, m, rayDir),
+            LightingType.BlinnPhong => CalcBlinnPhongColor(v, m),
+            _ => m.Color,
+        };
 
         private void CalculatePixel(int y, int x)
         {
@@ -162,12 +230,15 @@ namespace RayMarchLib
 
                 Material m = hit.material ?? Material.Default;
 
-                c = m.Color;
+                c = GetPointColor(pos, m, rayDir);
             }
             else
             {
                 c = Material.Background.Color;
             }
+
+            // Gamma correction
+            c = Utils.Pow(c, 1f / 2.2f);
 
             Bitmap.SetPixel(x, y, c.ToColor());
         }

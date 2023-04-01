@@ -18,7 +18,9 @@ namespace RayMarchLib
         /// </summary>
         public float MaxDist { get; set; }
         public int MaxIterations { get; set; }
+        public LightingType LightingType { get; set; }
         public List<RMObject> Objects { get; private set; }
+        public List<Light> Lights { get; private set; }
         public Camera Camera { get; set; }
 
         public Dictionary<string, Material> Materials { get; private set; }
@@ -35,6 +37,7 @@ namespace RayMarchLib
             Objects = new List<RMObject>();
             Camera = new Camera();
             Materials = new Dictionary<string, Material>();
+            Lights = new List<Light>();
         }
 
         public static Scene LoadFromFile(string fileName)
@@ -53,6 +56,17 @@ namespace RayMarchLib
                 LoadMaterials(scene, elMaterials);
             }
 
+            XElement elLights = elScene.Element(nameof(Lights));
+            if (elLights is not null)
+            {
+                LoadLights(scene, elLights);
+            }
+
+            if (scene.LightingType != LightingType.None && scene.Lights.Count == 0)
+            {
+                throw new SceneDeserializationException("Lights have to be specified if the LightingType isn't None");
+            }
+
             XElement elObjects = elScene.Element(nameof(Objects));
 
             LoadObjects(scene, elObjects);
@@ -66,6 +80,7 @@ namespace RayMarchLib
             scene.ImageHeight = (int)elScene.Element(nameof(ImageHeight));
             scene.Fov = Utils.ToRadians(Utils.ParseFloat(elScene.Element(nameof(Fov)).Value));
             scene.Eps = Utils.ParseFloat(elScene.Element(nameof(Eps)).Value);
+            scene.LightingType = Enum.Parse<LightingType>(elScene.Element(nameof(LightingType)).Value);
 
             XElement elMaxDist = elScene.Element(nameof(MaxDist));
             if (elMaxDist is not null)
@@ -79,6 +94,16 @@ namespace RayMarchLib
             if (elCamera is not null)
             {
                 scene.Camera = Camera.Deserialize(elCamera);
+            }
+        }
+
+        private static void LoadLights(Scene scene, XElement elLights)
+        {
+            foreach (XElement elLight in elLights.Elements())
+            {
+                Light l = Light.ParseLight(elLight);
+
+                scene.Lights.Add(l);
             }
         }
 
