@@ -10,6 +10,10 @@ namespace RayMarchLib
         public LightType LightType { get; set; }
         public Vector3 Direction { get; set; } = -Vector3.UnitY;
         public Vector3 Position { get; set; }
+        /// <summary>
+        /// Constant, linear and quadratic attenuation
+        /// </summary>
+        public Vector3 Attenuation { get; set; } = Vector3.One;
         public float Intensity { get; set; } = 1f;
 
         public static Light ParseLight(XElement el)
@@ -23,6 +27,12 @@ namespace RayMarchLib
             if (attrColor is not null)
             {
                 light.Color = Utils.ToVec3(attrColor.Value);
+            }
+
+            XAttribute attrAttenuation = el.Attribute(nameof(Attenuation));
+            if (attrAttenuation is not null)
+            {
+                light.Attenuation = Utils.ToVec3(attrAttenuation.Value);
             }
 
             XAttribute attrIntensity = el.Attribute(nameof(Intensity));

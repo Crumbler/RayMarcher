@@ -157,12 +157,16 @@ namespace RayMarchLib
             for (int i = 0; i < Scene.Lights.Count; ++i)
             {
                 Light l = Scene.Lights[i];
+                Vector3 posToLight;
+                float diff;
 
                 switch (l.LightType)
                 {
                     case LightType.Directional:
-                        Vector3 posToLight = -l.Direction;
-                        float diff = MathF.Max(0f, Vector3.Dot(posToLight, n));
+                        ambient += l.Color * l.Intensity;
+
+                        posToLight = -l.Direction;
+                        diff = MathF.Max(0f, Vector3.Dot(posToLight, n));
 
                         diffuse += l.Color * l.Intensity * diff;
 
@@ -178,11 +182,31 @@ namespace RayMarchLib
                         break;
 
                     case LightType.Point:
+                        posToLight = Vector3.Normalize(l.Position - v);
+                        float dist = (l.Position - v).Length();
+
+                        diff = MathF.Max(0f, Vector3.Dot(posToLight, n));
+
+                        float attenuation = 1f / 
+                            (l.Attenuation.X +
+                             l.Attenuation.Y * dist +
+                             l.Attenuation.Z * dist * dist);
+
+                        ambient += l.Color * l.Intensity * attenuation;
+
+                        diffuse += l.Color * l.Intensity * diff * attenuation;
+
+                        if (diff > 0f)
+                        {
+                            var reflDir = Vector3.Reflect(posToLight, n);
+                            float shineFactor = Vector3.Dot(reflDir, rayDir);
+                            shineFactor = MathF.Max(0f, shineFactor);
+
+                            specular += l.Color * attenuation * l.Intensity * MathF.Pow(shineFactor, m.Specular);
+                        }
 
                         break;
                 }
-
-                ambient += l.Color;
             }
 
             ambient *= m.Ambient;
