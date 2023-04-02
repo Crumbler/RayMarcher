@@ -10,6 +10,7 @@ namespace RayMarchLib
         public LightType LightType { get; set; }
         public Vector3 Direction { get; set; } = -Vector3.UnitY;
         public Vector3 Position { get; set; }
+        public float Intensity { get; set; } = 1f;
 
         public static Light ParseLight(XElement el)
         {
@@ -22,6 +23,12 @@ namespace RayMarchLib
             if (attrColor is not null)
             {
                 light.Color = Utils.ToVec3(attrColor.Value);
+            }
+
+            XAttribute attrIntensity = el.Attribute(nameof(Intensity));
+            if (attrIntensity is not null)
+            {
+                light.Intensity = Utils.ParseFloat(attrIntensity.Value);
             }
 
             switch (light.LightType)

@@ -164,7 +164,7 @@ namespace RayMarchLib
                         Vector3 posToLight = -l.Direction;
                         float diff = MathF.Max(0f, Vector3.Dot(posToLight, n));
 
-                        diffuse += l.Color * diff;
+                        diffuse += l.Color * l.Intensity * diff;
 
                         if (diff > 0f)
                         {
@@ -172,7 +172,7 @@ namespace RayMarchLib
                             float shineFactor = Vector3.Dot(reflDir, rayDir);
                             shineFactor = MathF.Max(0f, shineFactor);
 
-                            specular += l.Color * MathF.Pow(shineFactor, m.Specular);
+                            specular += l.Color * l.Intensity * MathF.Pow(shineFactor, m.Specular);
                         }
 
                         break;
