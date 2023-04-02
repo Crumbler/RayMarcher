@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -148,8 +149,13 @@ namespace RayMarchLib
             return hitObj.MapHit(v);
         }
 
-        private Vector3 CalcPhongColor(Vector3 v, Material m, Vector3 rayDir)
+        private Vector3 GetPointColor(Vector3 v, Material m, Vector3 rayDir)
         {
+            if (Scene.LightingType == LightingType.None)
+            {
+                return m.Color;
+            }
+
             Vector3 n = GetNormal(v);
             Vector3 ambient = Vector3.Zero, diffuse = Vector3.Zero,
                     specular = Vector3.Zero;
@@ -157,55 +163,50 @@ namespace RayMarchLib
             for (int i = 0; i < Scene.Lights.Count; ++i)
             {
                 Light l = Scene.Lights[i];
+
                 Vector3 posToLight;
-                float diff;
+                float attenuation;
 
-                switch (l.LightType)
+                if (l.LightType == LightType.Directional)
                 {
-                    case LightType.Directional:
-                        ambient += l.Color * l.Intensity;
+                    attenuation = 1f;
+                    posToLight = -l.Direction;
+                }
+                else // Point light
+                {
+                    float dist = (l.Position - v).Length();
 
-                        posToLight = -l.Direction;
-                        diff = MathF.Max(0f, Vector3.Dot(posToLight, n));
+                    attenuation = 1f /
+                        (l.Attenuation.X +
+                        l.Attenuation.Y * dist +
+                        l.Attenuation.Z * dist * dist);
 
-                        diffuse += l.Color * l.Intensity * diff;
+                    posToLight = Vector3.Normalize(l.Position - v);
+                }
 
-                        if (diff > 0f)
-                        {
-                            var reflDir = Vector3.Reflect(posToLight, n);
-                            float shineFactor = Vector3.Dot(reflDir, rayDir);
-                            shineFactor = MathF.Max(0f, shineFactor);
+                float diff = MathF.Max(0f, Vector3.Dot(posToLight, n));
 
-                            specular += l.Color * l.Intensity * MathF.Pow(shineFactor, m.Specular);
-                        }
+                ambient += l.Color * l.Intensity * attenuation;
 
-                        break;
+                diffuse += l.Color * l.Intensity * diff * attenuation;
 
-                    case LightType.Point:
-                        posToLight = Vector3.Normalize(l.Position - v);
-                        float dist = (l.Position - v).Length();
+                if (diff > 0f)
+                {
+                    float shineFactor;
 
-                        diff = MathF.Max(0f, Vector3.Dot(posToLight, n));
+                    if (Scene.LightingType == LightingType.Phong)
+                    {
+                        var reflDir = Vector3.Reflect(posToLight, n);
+                        shineFactor = Vector3.Dot(reflDir, rayDir);
+                    }
+                    else // Blinn-Phong
+                    {
+                        var halfVec = Vector3.Normalize((posToLight - rayDir) / 2f);
+                        shineFactor = Vector3.Dot(n, halfVec);
+                    }
+                    shineFactor = MathF.Max(0f, shineFactor);
 
-                        float attenuation = 1f / 
-                            (l.Attenuation.X +
-                             l.Attenuation.Y * dist +
-                             l.Attenuation.Z * dist * dist);
-
-                        ambient += l.Color * l.Intensity * attenuation;
-
-                        diffuse += l.Color * l.Intensity * diff * attenuation;
-
-                        if (diff > 0f)
-                        {
-                            var reflDir = Vector3.Reflect(posToLight, n);
-                            float shineFactor = Vector3.Dot(reflDir, rayDir);
-                            shineFactor = MathF.Max(0f, shineFactor);
-
-                            specular += l.Color * attenuation * l.Intensity * MathF.Pow(shineFactor, m.Specular);
-                        }
-
-                        break;
+                    specular += l.Color * attenuation * l.Intensity * MathF.Pow(shineFactor, m.Specular);
                 }
             }
 
@@ -214,18 +215,6 @@ namespace RayMarchLib
 
             return (ambient + diffuse + specular) * m.Color;
         }
-
-        private Vector3 CalcBlinnPhongColor(Vector3 v, Material m)
-        {
-            return Vector3.Zero;
-        }
-
-        private Vector3 GetPointColor(Vector3 v, Material m, Vector3 rayDir) => Scene.LightingType switch
-        {
-            LightingType.Phong => CalcPhongColor(v, m, rayDir),
-            LightingType.BlinnPhong => CalcBlinnPhongColor(v, m),
-            _ => m.Color,
-        };
 
         private void CalculatePixel(int y, int x)
         {
