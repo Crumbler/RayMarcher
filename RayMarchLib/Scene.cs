@@ -90,6 +90,12 @@ namespace RayMarchLib
                 scene.MaxDist = Utils.ParseFloat(elMaxDist.Value);
             }
 
+            XElement elShadowFactor = elScene.Element(nameof(ShadowFactor));
+            if (elShadowFactor is not null)
+            {
+                scene.ShadowFactor = Utils.ParseFloat(elShadowFactor.Value);
+            }
+
             scene.MaxIterations = (int)elScene.Element(nameof(MaxIterations));
 
             XElement elCamera = elScene.Element(nameof(Camera));
