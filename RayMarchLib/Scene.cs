@@ -17,6 +17,7 @@ namespace RayMarchLib
         /// The maximum distance after which the iterations stop
         /// </summary>
         public float MaxDist { get; set; }
+        public float ShadowFactor { get; set; }
         public int MaxIterations { get; set; }
         public LightingType LightingType { get; set; }
         public List<RMObject> Objects { get; private set; }
@@ -33,6 +34,7 @@ namespace RayMarchLib
             Eps = 0.001f;
             MaxDist = float.PositiveInfinity;
             MaxIterations = 80;
+            ShadowFactor = 0.05f;
 
             Objects = new List<RMObject>();
             Camera = new Camera();

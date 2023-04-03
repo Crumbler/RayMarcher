@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -121,12 +120,11 @@ namespace RayMarchLib
         private Vector3 GetNormal(Vector3 v)
         {
             const float h = 0.0001f;
-            Vector3 res;
 
-            res = new Vector3(1, -1, -1) * Map(v + new Vector3(1, -1, -1) * h) +
+            var res = new Vector3(1, -1, -1) * Map(v + new Vector3(1, -1, -1) * h) +
                 new Vector3(-1, -1, 1) * Map(v + new Vector3(-1, -1, 1) * h) +
                 new Vector3(-1, 1, -1) * Map(v + new Vector3(-1, 1, -1) * h) +
-                new Vector3(1, 1, 1) * Map(v + new Vector3(1, 1, 1) * h);
+                Vector3.One * Map(v + Vector3.One * h);
 
             return Vector3.Normalize(res);
         }
@@ -166,11 +164,15 @@ namespace RayMarchLib
 
                 Vector3 posToLight;
                 float attenuation;
+                bool inShadow;
 
                 if (l.LightType == LightType.Directional)
                 {
                     attenuation = 1f;
                     posToLight = -l.Direction;
+
+                    var marchRes = March(v + n * Scene.Eps * 2f, posToLight);
+                    inShadow = marchRes.distToObject < Scene.Eps;
                 }
                 else // Point light
                 {
@@ -182,13 +184,18 @@ namespace RayMarchLib
                         l.Attenuation.Z * dist * dist);
 
                     posToLight = Vector3.Normalize(l.Position - v);
+
+                    var marchRes = March(v + n * Scene.Eps * 2f, posToLight);
+                    inShadow = marchRes.distance < dist - Scene.Eps;
                 }
+
+                float shadowFactor = inShadow ? Scene.ShadowFactor : 1f;
 
                 float diff = MathF.Max(0f, Vector3.Dot(posToLight, n));
 
                 ambient += l.Color * l.Intensity * attenuation;
 
-                diffuse += l.Color * l.Intensity * diff * attenuation;
+                diffuse += l.Color * l.Intensity * diff * attenuation * shadowFactor;
 
                 if (diff > 0f)
                 {
@@ -201,26 +208,30 @@ namespace RayMarchLib
                     }
                     else // Blinn-Phong
                     {
-                        var halfVec = Vector3.Normalize((posToLight - rayDir) / 2f);
+                        var halfVec = Vector3.Normalize(posToLight - rayDir);
                         shineFactor = Vector3.Dot(n, halfVec);
                     }
+
                     shineFactor = MathF.Max(0f, shineFactor);
 
-                    specular += l.Color * attenuation * l.Intensity * MathF.Pow(shineFactor, m.Specular);
+                    specular += l.Color * attenuation * l.Intensity * 
+                        MathF.Pow(shineFactor, m.Specular) * shadowFactor;
                 }
             }
 
             ambient *= m.Ambient;
             diffuse *= m.Diffuse;
 
+            //return (n + Vector3.One) * 0.5f;
+
             return (ambient + diffuse + specular) * m.Color;
         }
 
-        private void CalculatePixel(int y, int x)
+        private MarchResult March(Vector3 origin, Vector3 direction)
         {
-            Vector3 c, rayDir = GetRayDir(y, x);
+            Vector3 rayDir = direction;
 
-            Vector3 rayOrigin = RayOrigin, pos = rayOrigin;
+            Vector3 rayOrigin = origin, pos = rayOrigin;
             float t = 0.0f, h = 0.0f;
 
             for (int i = 0; i < Scene.MaxIterations; ++i)
@@ -237,13 +248,29 @@ namespace RayMarchLib
                 t += h;
             }
 
-            if (h < Scene.Eps)
+            return new MarchResult()
             {
-                HitResult hit = GetHit(pos);
+                direction = direction,
+                origin = origin,
+                distance = t,
+                distToObject = h,
+                position = pos
+            };
+        }
+
+        private void CalculatePixel(int y, int x)
+        {
+            MarchResult res = March(RayOrigin, GetRayDir(y, x));
+
+            Vector3 c;
+
+            if (res.distToObject < Scene.Eps)
+            {
+                HitResult hit = GetHit(res.position);
 
                 Material m = hit.material ?? Material.Default;
 
-                c = GetPointColor(pos, m, rayDir);
+                c = GetPointColor(res.position, m, res.direction);
             }
             else
             {
