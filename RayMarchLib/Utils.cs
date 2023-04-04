@@ -86,5 +86,25 @@ namespace RayMarchLib
         {
             return float.Parse(s, CultureInfo.InvariantCulture);
         }
+
+        public static Vector3 Min(Vector3 a, Vector3 b, Vector3 c)
+        {
+            return Vector3.Min(a, Vector3.Min(b, c));
+        }
+
+        public static float Min(float a, float b, float c)
+        {
+            return MathF.Min(a, MathF.Min(b, c));
+        }
+
+        public static Vector3 Max(Vector3 a, Vector3 b, Vector3 c)
+        {
+            return Vector3.Max(a, Vector3.Max(b, c));
+        }
+
+        public static float Max(float a, float b, float c)
+        {
+            return MathF.Max(a, MathF.Max(b, c));
+        }
     }
 }

@@ -5,17 +5,17 @@ using System.Xml.Linq;
 
 namespace RayMarchLib
 {
-    public class Capsule : RMObject
+    public class Cyclinder : RMObject
     {
-        public float Length { get; set; } = 1.0f;
+        public float Length { get; set; } = 1f;
         public float Radius { get; set; } = 0.1f;
 
         protected override float GetDist(Vector3 v)
         {
-            v = Vector3.Abs(v);
-            v.Y = MathF.Max(0f, v.Y - Length / 2f);
+            Vector2 d = Vector2.Abs(new Vector2(new Vector2(v.X, v.Z).Length(), v.Y)) -
+                new Vector2(Radius, Length / 2f);
 
-            return v.Length() - Radius;
+            return MathF.Min(0f, MathF.Max(d.X, d.Y)) + Vector2.Max(d, Vector2.Zero).Length();
         }
 
         public override void Deserialize(Dictionary<string, Material> materials, XElement elObj)
