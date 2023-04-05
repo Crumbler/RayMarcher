@@ -73,6 +73,22 @@ namespace RayMarchLib
             return float.Parse(s, CultureInfo.InvariantCulture);
         }
 
+        public static float Sign(float x)
+        {
+            if (x > 0f)
+            {
+                return 1f;
+            }
+            else if (x < 0f)
+            {
+                return -1f;
+            }
+            else
+            {
+                return x;
+            }
+        }
+
         public static float Min(float a, float b, float c)
         {
             return MathF.Min(a, MathF.Min(b, c));

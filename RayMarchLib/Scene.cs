@@ -17,9 +17,11 @@ namespace RayMarchLib
         /// The maximum distance after which the iterations stop
         /// </summary>
         public float MaxDist { get; set; }
+        public float Step { get; set; }
         public float ShadowFactor { get; set; }
         public int MaxIterations { get; set; }
         public LightingType LightingType { get; set; }
+        public MarchingAlgorithm MarchingAlgorithm { get; set; }
         public List<RMObject> Objects { get; private set; }
         public List<Light> Lights { get; private set; }
         public Camera Camera { get; set; }
@@ -32,6 +34,7 @@ namespace RayMarchLib
             ImageHeight = 100;
             Fov = MathF.PI / 2.0f;
             Eps = 0.001f;
+            Step = 0.1f;
             MaxDist = float.PositiveInfinity;
             MaxIterations = 80;
             ShadowFactor = 0.05f;
@@ -84,10 +87,22 @@ namespace RayMarchLib
             scene.Eps = Utils.ParseFloat(elScene.Element(nameof(Eps)).Value);
             scene.LightingType = Enum.Parse<LightingType>(elScene.Element(nameof(LightingType)).Value);
 
+            XElement elMarchAlg = elScene.Element(nameof(MarchingAlgorithm));
+            if (elMarchAlg is not null)
+            {
+                scene.MarchingAlgorithm = Enum.Parse<MarchingAlgorithm>(elMarchAlg.Value);
+            }
+
             XElement elMaxDist = elScene.Element(nameof(MaxDist));
             if (elMaxDist is not null)
             {
                 scene.MaxDist = Utils.ParseFloat(elMaxDist.Value);
+            }
+
+            XElement elStep = elScene.Element(nameof(Step));
+            if (elStep is not null)
+            {
+                scene.Step = Utils.ParseFloat(elStep.Value);
             }
 
             XElement elShadowFactor = elScene.Element(nameof(ShadowFactor));
