@@ -11,7 +11,7 @@ namespace RayMarchLib
 
         protected override float GetDist(Vector3 v)
         {
-            var q = new Vector2(new Vector2(v.X, v.Z).Length() - InnerRadius, v.Y);
+            var q = new Vector2(v.XZ().Length() - InnerRadius, v.Y);
 
             return q.Length() - OuterRadius;
         }

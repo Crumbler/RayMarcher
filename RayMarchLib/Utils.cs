@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Globalization;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 
 namespace RayMarchLib
@@ -22,17 +23,6 @@ namespace RayMarchLib
             }
 
             return x;
-        }
-
-        public static string ToString(Vector3 v)
-        {
-            return string.Format(CultureInfo.InvariantCulture, "{0} {1} {2}", v.X, v.Y, v.Z);
-        }
-
-        public static string ToDegreesString(Vector3 v)
-        {
-            return string.Format(CultureInfo.InvariantCulture, "{0} {1} {2}", 
-                                 ToDegrees(v.X), ToDegrees(v.Y), ToDegrees(v.Z));
         }
 
         public static float ToDegrees(float x)
@@ -71,10 +61,6 @@ namespace RayMarchLib
             return new Vector3(x, y, z);
         }
 
-        public static Vector3 Pow(Vector3 v, float x) => new(MathF.Pow(v.X, x),
-                MathF.Pow(v.Y, x),
-                MathF.Pow(v.Z, x));
-
         public static Color ToColor(this Vector3 c)
         {
             var v = Vector3.Clamp(c, Vector3.Zero, Vector3.One);
@@ -87,14 +73,28 @@ namespace RayMarchLib
             return float.Parse(s, CultureInfo.InvariantCulture);
         }
 
-        public static Vector3 Min(Vector3 a, Vector3 b, Vector3 c)
-        {
-            return Vector3.Min(a, Vector3.Min(b, c));
-        }
-
         public static float Min(float a, float b, float c)
         {
             return MathF.Min(a, MathF.Min(b, c));
+        }
+
+        public static float Max(float a, float b, float c)
+        {
+            return MathF.Max(a, MathF.Max(b, c));
+        }
+
+        public static float MaxZero(this float x) => MathF.Max(x, 0f);
+        public static float MinZero(this float x) => MathF.Min(x, 0f);
+
+        #region Vectors
+
+        public static Vector3 Pow(Vector3 v, float x) => new(MathF.Pow(v.X, x),
+                MathF.Pow(v.Y, x),
+                MathF.Pow(v.Z, x));
+
+        public static Vector3 Min(Vector3 a, Vector3 b, Vector3 c)
+        {
+            return Vector3.Min(a, Vector3.Min(b, c));
         }
 
         public static Vector3 Max(Vector3 a, Vector3 b, Vector3 c)
@@ -102,9 +102,17 @@ namespace RayMarchLib
             return Vector3.Max(a, Vector3.Max(b, c));
         }
 
-        public static float Max(float a, float b, float c)
-        {
-            return MathF.Max(a, MathF.Max(b, c));
-        }
+        public static Vector2 XY(this Vector3 a) => new(a.X, a.Y);
+        public static Vector2 YX(this Vector3 a) => new(a.Y, a.X);
+        public static Vector2 XZ(this Vector3 a) => new(a.X, a.Z);
+        public static Vector2 ZX(this Vector3 a) => new(a.Z, a.X);
+        public static Vector2 YZ(this Vector3 a) => new(a.Y, a.Z);
+        public static Vector2 ZY(this Vector3 a) => new(a.Z, a.Y);
+        public static float Max(this Vector3 a) => Max(a.X, a.Y, a.Z);
+        public static float Min(this Vector3 a) => Min(a.X, a.Y, a.Z);
+        public static Vector3 MaxZero(this Vector3 a) => Vector3.Max(a, Vector3.Zero);
+        public static Vector3 MinZero(this Vector3 a) => Vector3.Min(a, Vector3.Zero);
+
+        #endregion
     }
 }

@@ -13,8 +13,8 @@ namespace RayMarchLib
 
         protected override float GetDist(Vector3 v)
         {
-            var q = new Vector3(v.X, MathF.Max(MathF.Abs(v.Y) - Length, 0f), v.Z);
-            return new Vector2(new Vector2(q.X, q.Y).Length() - InnerRadius, q.Z).Length() - OuterRadius;
+            var q = new Vector3(v.X, (MathF.Abs(v.Y) - Length).MaxZero(), v.Z);
+            return new Vector2(q.XY().Length() - InnerRadius, q.Z).Length() - OuterRadius;
         }
 
         public override void Deserialize(Dictionary<string, Material> materials, XElement elObj)

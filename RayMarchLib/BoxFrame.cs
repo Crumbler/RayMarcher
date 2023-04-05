@@ -15,13 +15,14 @@ namespace RayMarchLib
             v = Vector3.Abs(v) - Size;
             var q = Vector3.Abs(v + new Vector3(Thickness)) - new Vector3(Thickness);
 
+            Vector3 a = new(q.YZ(), v.X),
+                b = new(q.XZ(), v.Y),
+                c = new(q.XY(), v.Z);
+
             return Utils.Min(
-                Vector3.Max(new Vector3(v.X, q.Y, q.Z), Vector3.Zero).Length() +
-                    MathF.Min(0f, Utils.Max(v.X, q.Y, q.Z)),
-                Vector3.Max(new Vector3(q.X, v.Y, q.Z), Vector3.Zero).Length() +
-                    MathF.Min(0f, Utils.Max(q.X, v.Y, q.Z)),
-                Vector3.Max(new Vector3(q.X, q.Y, v.Z), Vector3.Zero).Length() +
-                    MathF.Min(0f, Utils.Max(q.X, q.Y, v.Z)));
+                a.MaxZero().Length() + a.Max().MinZero(),
+                b.MaxZero().Length() + b.Max().MinZero(),
+                c.MaxZero().Length() + c.Max().MinZero());
         }
 
         public override void Deserialize(Dictionary<string, Material> materials, XElement elObj)
