@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Numerics;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace RayMarchLib
@@ -13,6 +14,21 @@ namespace RayMarchLib
 
         private Matrix4x4 projMatInv, viewMatInv;
         private Vector3 RayOrigin { get; set; }
+        private int currProgress;
+        public int CurrProgress
+        {
+            get
+            {
+                return currProgress;
+            }
+        }
+        public int TotalProgress
+        {
+            get
+            {
+                return Scene.ImageHeight;
+            }
+        }
 
         public RayMarcher(Scene scene, DirectBitmap bitmap)
         {
@@ -34,6 +50,13 @@ namespace RayMarchLib
 
         public void CalculateFrame(int threads = 1)
         {
+            CalcFrame(threads).Wait();
+        }
+
+        private Task CalcFrame(int threads = 1)
+        {
+            currProgress = 0;
+
             if (Scene.ImageWidth != Bitmap.Width || Scene.ImageHeight != Bitmap.Height)
             {
                 Bitmap.Dispose();
@@ -52,7 +75,7 @@ namespace RayMarchLib
 
             projMatInv = Matrix4x4.CreatePerspectiveFieldOfView(Scene.Fov, aspectRatio, nearPlane, farPlane);
             Matrix4x4.Invert(projMatInv, out projMatInv);
-            
+
             int rowsPerThread = Bitmap.Height / threads;
 
             var tasks = new Task[threads];
@@ -60,27 +83,29 @@ namespace RayMarchLib
             for (int i = 0; i < threads; ++i)
             {
                 int rowStart = i * rowsPerThread,
-                    rowEnd = (i + 1) * rowsPerThread;
+                    rowEnd = Math.Min((i + 1) * rowsPerThread, Bitmap.Height);
 
-                if (i == threads - 1)
-                {
-                    rowEnd = Bitmap.Height - 1;
-                }
-
-                tasks[i] = Task.Run(() => CalculateRow(rowStart, rowEnd));
+                tasks[i] = Task.Run(() => CalculateRows(rowStart, rowEnd));
             }
 
-            Task.WaitAll(tasks);
+            return Task.WhenAll(tasks);
         }
 
-        private void CalculateRow(int rowStart, int rowEnd)
+        public async Task CalculateFrameAsync(int threads = 1)
         {
-            for (int i = rowStart; i <= rowEnd; ++i)
+            await CalcFrame(threads);
+        }
+
+        private void CalculateRows(int rowStart, int rowEnd)
+        {
+            for (int i = rowStart; i < rowEnd; ++i)
             {
                 for (int j = 0; j < Bitmap.Width; ++j)
                 {
                     CalculatePixel(i, j);
                 }
+
+                Interlocked.Increment(ref currProgress);
             }
         }
 
