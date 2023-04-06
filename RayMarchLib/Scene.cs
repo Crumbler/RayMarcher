@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Xml.Linq;
 
 namespace RayMarchLib
@@ -20,6 +19,8 @@ namespace RayMarchLib
         public float MaxDist { get; set; }
         public float Step { get; set; }
         public float ShadowFactor { get; set; }
+        public bool SoftShadows { get; set; }
+        public float ShadowSoftness { get; set; }
         public bool AntiAliasing { get; set; }
         public int MaxIterations { get; set; }
         public LightingType LightingType { get; set; }
@@ -39,8 +40,10 @@ namespace RayMarchLib
             Step = 0.1f;
             MaxDist = float.PositiveInfinity;
             AntiAliasing = false;
+            SoftShadows = false;
             MaxIterations = 80;
             ShadowFactor = 0.05f;
+            ShadowSoftness = 128f;
 
             Objects = new List<RMObject>();
             Camera = new Camera();
@@ -96,10 +99,22 @@ namespace RayMarchLib
                 scene.MarchingAlgorithm = Enum.Parse<MarchingAlgorithm>(elMarchAlg.Value);
             }
 
+            XElement elShadowSoftness = elScene.Element(nameof(ShadowSoftness));
+            if (elShadowSoftness is not null)
+            {
+                scene.ShadowSoftness = Utils.ParseFloat(elShadowSoftness.Value);
+            }
+
             XElement elAntiAliasing = elScene.Element(nameof(AntiAliasing));
             if (elAntiAliasing is not null)
             {
                 scene.AntiAliasing = Utils.ParseBool(elAntiAliasing.Value);
+            }
+
+            XElement elSoftShadows = elScene.Element(nameof(SoftShadows));
+            if (elSoftShadows is not null)
+            {
+                scene.SoftShadows = Utils.ParseBool(elSoftShadows.Value);
             }
 
             XElement elMaxDist = elScene.Element(nameof(MaxDist));

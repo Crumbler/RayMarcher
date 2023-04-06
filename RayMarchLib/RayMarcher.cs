@@ -188,16 +188,13 @@ namespace RayMarchLib
                 Light l = Scene.Lights[i];
 
                 Vector3 posToLight;
-                float attenuation;
-                bool inShadow;
+                float attenuation, distToLight;
 
                 if (l.LightType == LightType.Directional)
                 {
                     attenuation = 1f;
                     posToLight = -l.Direction;
-
-                    var marchRes = March(v + n * Scene.Eps * 2f, posToLight, Scene.MaxDist);
-                    inShadow = marchRes.distToObject < Scene.Eps;
+                    distToLight = Scene.MaxDist;
                 }
                 else // Point light
                 {
@@ -209,12 +206,26 @@ namespace RayMarchLib
                         l.Attenuation.Z * dist * dist);
 
                     posToLight = Vector3.Normalize(l.Position - v);
-
-                    var marchRes = March(v + n * Scene.Eps * 2f, posToLight, dist);
-                    inShadow = marchRes.distance < dist - Scene.Eps;
+                    distToLight = dist;
                 }
 
-                float shadowFactor = inShadow ? Scene.ShadowFactor : 1f;
+                float shadowFactor;
+                if (Scene.SoftShadows)
+                {
+                    MarchShadow(v + n * Scene.Eps * 2f, posToLight, distToLight, out shadowFactor);
+                }
+                else
+                {
+                    var marchRes = March(v + n * Scene.Eps * 2f, posToLight, distToLight);
+                    if (l.LightType == LightType.Directional)
+                    {
+                        shadowFactor = marchRes.distToObject < Scene.Eps ? Scene.ShadowFactor : 1f;
+                    }
+                    else
+                    {
+                        shadowFactor = marchRes.distance < distToLight - Scene.Eps ? Scene.ShadowFactor : 1f;
+                    }
+                }
 
                 float diff = MathF.Max(0f, Vector3.Dot(posToLight, n));
 
@@ -250,6 +261,135 @@ namespace RayMarchLib
             return (ambient + diffuse + specular) * m.Color;
         }
 
+        private MarchResult MarchShadowSphere(Vector3 origin, Vector3 direction, float maxDist, out float res)
+        {
+            Vector3 rayDir = direction;
+            Vector3 rayOrigin = origin, pos = rayOrigin;
+
+            float ph = 1e10f;
+            float t = 0f, sRes = 1f, h = float.PositiveInfinity;
+
+            for (int i = 0; i < Scene.MaxIterations && t < maxDist; ++i)
+            {
+                pos = rayOrigin + rayDir * t;
+
+                h = Map(pos);
+
+                if (h < Scene.Eps)
+                {
+                    res = Scene.ShadowFactor;
+                    return new MarchResult()
+                    {
+                        direction = direction,
+                        distance = t,
+                        distToObject = h,
+                        origin = origin,
+                        position = pos
+                    };
+                }
+
+                float y = h * h / (2f * ph);
+                float d = MathF.Sqrt(h * h - y * y);
+
+                float divisor = Scene.ShadowSoftness * d / (t - y).MaxZero();
+
+                if (!float.IsNaN(divisor))
+                {
+                    sRes = MathF.Min(sRes, divisor);
+                }
+
+                ph = h;
+
+                t = MathF.Min(t + h, maxDist);
+            }
+
+            res = Utils.Clamp(sRes, Scene.ShadowFactor, 1f);
+
+            return new MarchResult()
+            {
+                direction = direction,
+                distance = t,
+                distToObject = h,
+                origin = origin,
+                position = pos
+            };
+        }
+
+        private MarchResult MarchShadowFixed(Vector3 origin, Vector3 direction, float step, float maxDist, out float res)
+        {
+            Vector3 rayDir = direction, rayOrigin = origin,
+                pos = rayOrigin;
+
+            float ph = 1e10f;
+            float t = 0f, sRes = 1f;
+            float lastSign, sign = 1f, h = float.PositiveInfinity;
+
+            for (int i = 0; i < Scene.MaxIterations && t < maxDist; ++i)
+            {
+                pos = rayOrigin + rayDir * t;
+
+                h = Map(pos);
+
+                if (h < Scene.Eps)
+                {
+                    res = Scene.ShadowFactor;
+                    return new MarchResult()
+                    {
+                        direction = direction,
+                        distance = t,
+                        distToObject = h,
+                        origin = origin,
+                        position = pos
+                    };
+                }
+
+                float y = h * h / (2f * ph);
+                float d = MathF.Sqrt(h * h - y * y);
+
+                float divisor = Scene.ShadowSoftness * d / (t - y).MaxZero();
+
+                if (!float.IsNaN(divisor))
+                {
+                    sRes = MathF.Min(sRes, divisor);
+                }
+
+                ph = h;
+
+                lastSign = sign;
+                sign = Utils.Sign(h);
+
+                if (sign != lastSign)
+                {
+                    step /= 2f;
+                }
+
+                t = MathF.Min(t + step * sign, maxDist);
+            }
+
+            res = Utils.Clamp(sRes, Scene.ShadowFactor, 1f);
+
+            return new MarchResult()
+            {
+                direction = direction,
+                distance = t,
+                distToObject = h,
+                origin = origin,
+                position = pos
+            };
+        }
+
+        private MarchResult MarchShadow(Vector3 origin, Vector3 direction, float maxDist, out float res)
+        {
+            if (Scene.MarchingAlgorithm == MarchingAlgorithm.SphereTracing)
+            {
+                return MarchShadowSphere(origin, direction, maxDist, out res);
+            }
+            else // Fixed step
+            {
+                return MarchShadowFixed(origin, direction, Scene.Step, maxDist, out res);
+            }
+        }
+
         private MarchResult MarchSphere(Vector3 origin, Vector3 direction, float maxDist)
         {
             Vector3 rayDir = direction;
@@ -263,7 +403,7 @@ namespace RayMarchLib
 
                 h = Map(pos);
 
-                if ((h < Scene.Eps && h > 0f) || t >= maxDist)
+                if (h < Scene.Eps || t >= maxDist)
                 {
                     break;
                 }
@@ -294,7 +434,7 @@ namespace RayMarchLib
 
                 h = Map(pos);
 
-                if (h < Scene.Eps || t >= maxDist)
+                if ((h < Scene.Eps && h > 0f) || t >= maxDist)
                 {
                     break;
                 }
@@ -306,7 +446,7 @@ namespace RayMarchLib
                 {
                     step /= 2f;
                 }
-
+                
                 t = MathF.Min(t + step * sign, maxDist);
             }
 
