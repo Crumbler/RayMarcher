@@ -73,6 +73,21 @@ namespace RayMarchLib
             return float.Parse(s, CultureInfo.InvariantCulture);
         }
 
+        public static bool ParseBool(string s)
+        {
+            if (string.Equals(s, "on", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return true;
+            }
+
+            if (string.Equals(s, "off", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return false;
+            }
+
+            throw new FormatException("Invalid boolean format: " + s);
+        }
+
         public static float Sign(float x)
         {
             if (x > 0f)

@@ -109,7 +109,7 @@ namespace RayMarchLib
             }
         }
 
-        private Vector3 GetRayDir(int y, int x)
+        private Vector3 GetRayDir(float y, float x)
         {
             int bWidth = Bitmap.Width - 1,
                 bHeight = Bitmap.Height - 1;
@@ -172,7 +172,7 @@ namespace RayMarchLib
             return hitObj.MapHit(v);
         }
 
-        private Vector3 GetPointColor(Vector3 v, Material m, Vector3 rayDir)
+        private Vector3 GetColorAtPoint(Vector3 v, Material m, Vector3 rayDir)
         {
             if (Scene.LightingType == LightingType.None)
             {
@@ -294,7 +294,7 @@ namespace RayMarchLib
 
                 h = Map(pos);
 
-                if ((h < Scene.Eps && h > 0f) || t >= maxDist)
+                if (h < Scene.Eps || t >= maxDist)
                 {
                     break;
                 }
@@ -332,11 +332,9 @@ namespace RayMarchLib
             }
         }
 
-        private void CalculatePixel(int y, int x)
+        private Vector3 GetPixelColor(float x, float y)
         {
             MarchResult res = March(RayOrigin, GetRayDir(y, x), Scene.MaxDist);
-
-            Vector3 c;
 
             if (res.distToObject < Scene.Eps)
             {
@@ -344,12 +342,34 @@ namespace RayMarchLib
 
                 Material m = hit.material ?? Material.Default;
 
-                c = GetPointColor(res.position, m, res.direction);
+                return GetColorAtPoint(res.position, m, res.direction);
             }
             else
             {
-                c = Material.Background.Color;
+                return Material.Background.Color;
             }
+        }
+
+        private Vector3 CalculatePixelColor(float x, float y)
+        {
+            if (Scene.AntiAliasing)
+            {
+                Vector3 c1 = GetPixelColor(x + 3f / 8f, y - 1f / 8f),
+                    c2 = GetPixelColor(x + 1f / 8f, y + 3f / 8f),
+                    c3 = GetPixelColor(x - 3f / 8f, y + 1f / 8f),
+                    c4 = GetPixelColor(x - 1f / 8f, y - 3f / 8f);
+
+                return (c1 + c2 + c3 + c4) / 4f;
+            }
+            else
+            {
+                return GetPixelColor(x, y);
+            }
+        }
+
+        private void CalculatePixel(int y, int x)
+        {
+            Vector3 c = CalculatePixelColor(x, y);
 
             // Gamma correction
             c = Utils.Pow(c, 1f / 2.2f);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Xml.Linq;
 
 namespace RayMarchLib
@@ -19,6 +20,7 @@ namespace RayMarchLib
         public float MaxDist { get; set; }
         public float Step { get; set; }
         public float ShadowFactor { get; set; }
+        public bool AntiAliasing { get; set; }
         public int MaxIterations { get; set; }
         public LightingType LightingType { get; set; }
         public MarchingAlgorithm MarchingAlgorithm { get; set; }
@@ -36,6 +38,7 @@ namespace RayMarchLib
             Eps = 0.001f;
             Step = 0.1f;
             MaxDist = float.PositiveInfinity;
+            AntiAliasing = false;
             MaxIterations = 80;
             ShadowFactor = 0.05f;
 
@@ -91,6 +94,12 @@ namespace RayMarchLib
             if (elMarchAlg is not null)
             {
                 scene.MarchingAlgorithm = Enum.Parse<MarchingAlgorithm>(elMarchAlg.Value);
+            }
+
+            XElement elAntiAliasing = elScene.Element(nameof(AntiAliasing));
+            if (elAntiAliasing is not null)
+            {
+                scene.AntiAliasing = Utils.ParseBool(elAntiAliasing.Value);
             }
 
             XElement elMaxDist = elScene.Element(nameof(MaxDist));
