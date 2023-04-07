@@ -85,7 +85,7 @@ namespace RayMarchLib
                 int rowStart = i * rowsPerThread,
                     rowEnd = Math.Min((i + 1) * rowsPerThread, Bitmap.Height);
 
-                tasks[i] = Task.Run(() => CalculateRows(rowStart, rowEnd));
+                tasks[i] = Task.Run(CalculateRows);
             }
 
             return Task.WhenAll(tasks);
@@ -96,16 +96,20 @@ namespace RayMarchLib
             await CalcFrame(threads);
         }
 
-        private void CalculateRows(int rowStart, int rowEnd)
+        private void CalculateRows()
         {
-            for (int i = rowStart; i < rowEnd; ++i)
+            while (currProgress < Bitmap.Height)
             {
-                for (int j = 0; j < Bitmap.Width; ++j)
+                int row = Interlocked.Increment(ref currProgress) - 1;
+                if (row >= Bitmap.Height)
                 {
-                    CalculatePixel(i, j);
+                    break;
                 }
 
-                Interlocked.Increment(ref currProgress);
+                for (int j = 0; j < Bitmap.Width; ++j)
+                {
+                    CalculatePixel(row, j);
+                }
             }
         }
 
@@ -267,7 +271,7 @@ namespace RayMarchLib
             Vector3 rayOrigin = origin, pos = rayOrigin;
 
             float ph = 1e10f;
-            float t = 0f, sRes = 1f, h = float.PositiveInfinity;
+            float t = 0.1f, sRes = 1f, h = float.PositiveInfinity;
 
             for (int i = 0; i < Scene.MaxIterations && t < maxDist; ++i)
             {
@@ -321,7 +325,7 @@ namespace RayMarchLib
                 pos = rayOrigin;
 
             float ph = 1e10f;
-            float t = 0f, sRes = 1f;
+            float t = 0.1f, sRes = 1f;
             float lastSign, sign = 1f, h = float.PositiveInfinity;
 
             for (int i = 0; i < Scene.MaxIterations && t < maxDist; ++i)
