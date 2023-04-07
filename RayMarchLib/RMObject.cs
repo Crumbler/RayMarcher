@@ -17,8 +17,6 @@ namespace RayMarchLib
 
         private Matrix4x4 InvModelMatrix { get; set; }
 
-        public string Name { get; set; }
-
         public float Map(Vector3 v)
         {
             v = Vector3.Transform(v, InvModelMatrix);
@@ -60,12 +58,6 @@ namespace RayMarchLib
 
         public virtual void Deserialize(Dictionary<string, Material> materials, XElement elObj)
         {
-            XAttribute attrName = elObj.Attribute(nameof(Name));
-            if (attrName is not null)
-            {
-                Name = attrName.Value;
-            }
-
             XAttribute attrMaterialName = elObj.Attribute(nameof(Material));
             if (attrMaterialName is not null)
             {
