@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Globalization;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 
 namespace RayMarchLib
@@ -23,11 +22,6 @@ namespace RayMarchLib
             }
 
             return x;
-        }
-
-        public static float ToDegrees(float x)
-        {
-            return 180.0f * x / MathF.PI;
         }
 
         public static float ToRadians(float x)
