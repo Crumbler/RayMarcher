@@ -7,7 +7,7 @@ namespace RayMarchLib
     public abstract class RMObject
     {
         public Vector3 Position { get; set; }
-        public Material Material { get; set; }
+        public Material? Material { get; set; }
         public float Scale { get; set; } = 1.0f;
 
         /// <summary>

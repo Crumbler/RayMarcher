@@ -3,7 +3,7 @@ using System.Xml.Linq;
 
 namespace RayMarchLib
 {
-    public class Material
+    public struct Material
     {
         public Vector3 Color { get; set; }
         public float Ambient { get; set; }
