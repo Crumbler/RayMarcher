@@ -9,13 +9,15 @@ namespace RayMarchLib
         public float Ambient { get; set; }
         public float Diffuse { get; set; }
         public float Specular { get; set; }
+        public float Shininess { get; set; }
 
         public Material()
         {
             Color = Vector3.One;
             Ambient = 0.05f;
             Diffuse = 0.1f;
-            Specular = 32.0f;
+            Specular = 1f;
+            Shininess = 64f;
         }
 
         public static Material

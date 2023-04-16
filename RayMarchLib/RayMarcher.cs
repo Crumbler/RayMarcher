@@ -255,14 +255,14 @@ namespace RayMarchLib
                     shineFactor = MathF.Max(0f, shineFactor);
 
                     specular += l.Color * attenuation * l.Intensity * 
-                        MathF.Pow(shineFactor, m.Specular) * shadowFactor;
+                        MathF.Pow(shineFactor, m.Shininess) * m.Specular * shadowFactor;
                 }
             }
 
             ambient *= m.Ambient;
             diffuse *= m.Diffuse;
 
-            return (ambient + diffuse + specular) * m.Color;
+            return (ambient + diffuse) * m.Color + specular;
         }
 
         private MarchResult MarchShadowSphere(Vector3 origin, Vector3 direction, float maxDist, out float res)
