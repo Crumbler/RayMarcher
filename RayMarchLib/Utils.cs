@@ -135,8 +135,21 @@ namespace RayMarchLib
         public static Vector2 ZY(this Vector3 a) => new(a.Z, a.Y);
         public static float Max(this Vector3 a) => Max(a.X, a.Y, a.Z);
         public static float Min(this Vector3 a) => Min(a.X, a.Y, a.Z);
+        public static float Max(this Vector2 a) => MathF.Max(a.X, a.Y);
+        public static float Min(this Vector2 a) => MathF.Min(a.X, a.Y);
         public static Vector3 MaxZero(this Vector3 a) => Vector3.Max(a, Vector3.Zero);
         public static Vector3 MinZero(this Vector3 a) => Vector3.Min(a, Vector3.Zero);
+
+        public static Vector3 Mod(Vector3 a, float b) => Mod(a, new Vector3(b));
+
+        public static Vector3 Mod(Vector3 a, Vector3 b)
+        {
+            a.X = MathF.IEEERemainder(a.X, b.X);
+            a.Y = MathF.IEEERemainder(a.Y, b.Y);
+            a.Z = MathF.IEEERemainder(a.Z, b.Z);
+
+            return a;
+        }
 
         #endregion
     }
