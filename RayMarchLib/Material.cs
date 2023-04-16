@@ -55,6 +55,12 @@ namespace RayMarchLib
                 m.Specular = Utils.ParseFloat(attrSpecular.Value);
             }
 
+            XAttribute attrShininess = el.Attribute(nameof(Shininess));
+            if (attrShininess is not null)
+            {
+                m.Shininess = Utils.ParseFloat(attrShininess.Value);
+            }
+
             return m;
         }
     }
