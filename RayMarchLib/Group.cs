@@ -5,7 +5,7 @@ namespace RayMarchLib
 {
     public class Group : RMObject, IRMGroup
     {
-        private readonly List<RMObject> objects = new();
+        protected readonly List<RMObject> objects = new();
         protected override float GetDist(Vector3 v)
         {
             float minDist = float.PositiveInfinity;

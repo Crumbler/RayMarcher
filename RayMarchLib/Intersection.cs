@@ -1,12 +1,10 @@
 ﻿
-using System.Collections.Generic;
 using System.Numerics;
 
 namespace RayMarchLib
 {
-    public class Intersection : RMObject, IRMGroup
+    public class Intersection : Group
     {
-        private readonly List<RMObject> objects = new();
         protected override float GetDist(Vector3 v)
         {
             float maxDist = objects[^1].Map(v);
@@ -45,19 +43,9 @@ namespace RayMarchLib
             return hit;
         }
 
-        public void AddObject(RMObject obj)
-        {
-            objects.Add(obj);
-        }
-
         public override void PreCalculate()
         {
             base.PreCalculate();
-
-            foreach (RMObject obj in objects)
-            {
-                obj.PreCalculate();
-            }
 
             if (objects.Count <= 1)
             {
