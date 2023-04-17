@@ -9,6 +9,7 @@ namespace RayMarchLib
         public Vector3 Position { get; set; }
         public Material? Material { get; set; }
         public float Scale { get; set; } = 1.0f;
+        public bool Invert { get; set; }
 
         /// <summary>
         /// Rotation around the X, Y and Z axes
@@ -21,7 +22,7 @@ namespace RayMarchLib
         {
             v = Vector3.Transform(v, InvModelMatrix);
 
-            return GetDist(v) * Scale;
+            return GetDist(v) * Scale * (Invert ? -1f : 1f);
         }
 
         public virtual void PreCalculate()
@@ -42,7 +43,7 @@ namespace RayMarchLib
             v = Vector3.Transform(v, InvModelMatrix);
 
             var hit = GetHit(v);
-            hit.distance *= Scale;
+            hit.distance *= Scale * (Invert ? -1f : 1f);
 
             return hit;
         }
@@ -80,6 +81,12 @@ namespace RayMarchLib
             if (attrScale is not null)
             {
                 Scale = Utils.ParseFloat(attrScale.Value);
+            }
+
+            XAttribute attrInvert = elObj.Attribute(nameof(Invert));
+            if (attrInvert is not null)
+            {
+                Invert = Utils.ParseBool(attrInvert.Value);
             }
         }
     }
