@@ -11,42 +11,38 @@ namespace RayMarchLib
         public static readonly XElement XEmpty = new(string.Empty);
         public static float Clamp(float x, float a, float b)
         {
-            if (x < a)
-            {
-                return a;
-            }
+            return MathF.Min(MathF.Max(x, a), b);
+        }
 
-            if (x > b)
-            {
-                return b;
-            }
-
-            return x;
+        public static bool HasFraction(float x)
+        {
+            return x != (int)x;
         }
 
         public static float ToRadians(float x)
         {
-            return x * MathF.PI / 180.0f;
+            return x * MathF.PI / 180f;
         }
 
         public static Vector3 ToRadiansVec3(string s)
         {
-            int ind = s.IndexOf(' ');
-            float x = ParseFloat(s[0..ind]);
-            x = ToRadians(x);
-            int ind2 = s.IndexOf(' ', ind + 1);
-            float y = ParseFloat(s[(ind + 1)..ind2]),
-                  z = ParseFloat(s[(ind2 + 1)..]);
+            Vector3 v = ToVec3(s);
 
-            y = ToRadians(y);
-            z = ToRadians(z);
+            v.X = ToRadians(v.X);
+            v.Y = ToRadians(v.Y);
+            v.Z = ToRadians(v.Z);
 
-            return new Vector3(x, y, z);
+            return v;
         }
 
         public static Vector3 ToVec3(string s)
         {
             int ind = s.IndexOf(' ');
+            if (ind == -1)
+            {
+                return new Vector3(ParseFloat(s));
+            }
+
             float x = ParseFloat(s[0..ind]);
             int ind2 = s.IndexOf(' ', ind + 1);
             float y = ParseFloat(s[(ind + 1)..ind2]),
@@ -112,6 +108,19 @@ namespace RayMarchLib
         public static float MinZero(this float x) => MathF.Min(x, 0f);
 
         #region Vectors
+
+        public static bool HasFraction(Vector3 v)
+        {
+            return HasFraction(v.X) || HasFraction(v.Y) ||
+                HasFraction(v.Z);
+        }
+
+        public static Vector3 Round(Vector3 v)
+        {
+            return new Vector3(MathF.Round(v.X),
+                MathF.Round(v.Y),
+                MathF.Round(v.Z));
+        }
 
         public static Vector3 Pow(Vector3 v, float x) => new(MathF.Pow(v.X, x),
                 MathF.Pow(v.Y, x),
