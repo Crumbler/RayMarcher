@@ -271,7 +271,7 @@ namespace RayMarchLib
             Vector3 rayOrigin = origin, pos = rayOrigin;
 
             float ph = 1e10f;
-            float t = 0.1f, sRes = 1f, h = float.PositiveInfinity;
+            float t = 0f, sRes = 1f, h = float.PositiveInfinity;
 
             for (int i = 0; i < Scene.MaxIterations && t < maxDist; ++i)
             {
@@ -295,11 +295,11 @@ namespace RayMarchLib
                 float y = h * h / (2f * ph);
                 float d = MathF.Sqrt(h * h - y * y);
 
-                float divisor = Scene.ShadowSoftness * d / (t - y).MaxZero();
+                float newRes = Scene.ShadowSoftness * d / (t - y).MaxZero();
 
-                if (!float.IsNaN(divisor))
+                if (!float.IsNaN(newRes))
                 {
-                    sRes = MathF.Min(sRes, divisor);
+                    sRes = MathF.Min(sRes, newRes);
                 }
 
                 ph = h;
@@ -307,7 +307,7 @@ namespace RayMarchLib
                 t = MathF.Min(t + h, maxDist);
             }
 
-            res = Utils.Clamp(sRes, Scene.ShadowFactor, 1f);
+            res = Utils.Clamp(Scene.ShadowFactor + (1f - Scene.ShadowFactor) * sRes, Scene.ShadowFactor, 1f);
 
             return new MarchResult()
             {
@@ -325,7 +325,7 @@ namespace RayMarchLib
                 pos = rayOrigin;
 
             float ph = 1e10f;
-            float t = 0.1f, sRes = 1f;
+            float t = 0f, sRes = 1f;
             float lastSign, sign = 1f, h = float.PositiveInfinity;
 
             for (int i = 0; i < Scene.MaxIterations && t < maxDist; ++i)
@@ -350,11 +350,11 @@ namespace RayMarchLib
                 float y = h * h / (2f * ph);
                 float d = MathF.Sqrt(h * h - y * y);
 
-                float divisor = Scene.ShadowSoftness * d / (t - y).MaxZero();
+                float newRes = Scene.ShadowSoftness * d / (t - y).MaxZero();
 
-                if (!float.IsNaN(divisor))
+                if (!float.IsNaN(newRes))
                 {
-                    sRes = MathF.Min(sRes, divisor);
+                    sRes = MathF.Min(sRes, newRes);
                 }
 
                 ph = h;
@@ -370,7 +370,7 @@ namespace RayMarchLib
                 t = MathF.Min(t + step * sign, maxDist);
             }
 
-            res = Utils.Clamp(sRes, Scene.ShadowFactor, 1f);
+            res = Utils.Clamp(Scene.ShadowFactor + (1f - Scene.ShadowFactor) * sRes, Scene.ShadowFactor, 1f);
 
             return new MarchResult()
             {
