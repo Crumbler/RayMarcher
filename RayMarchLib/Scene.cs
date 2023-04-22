@@ -88,9 +88,33 @@ namespace RayMarchLib
         private static void LoadParams(Scene scene, XElement elScene)
         {
             scene.ImageWidth = (int)elScene.Element(nameof(ImageWidth));
+
+            if (scene.ImageWidth <= 0)
+            {
+                throw new SceneDeserializationException("ImageWidth has to be positive");
+            }
+
             scene.ImageHeight = (int)elScene.Element(nameof(ImageHeight));
+
+            if (scene.ImageHeight <= 0)
+            {
+                throw new SceneDeserializationException("ImageHeight has to be positive");
+            }
+
             scene.Fov = Utils.ToRadians(Utils.ParseFloat(elScene.Element(nameof(Fov)).Value));
+
+            if (scene.Fov < Utils.ToRadians(1f) || scene.Fov > Utils.ToRadians(360f))
+            {
+                throw new SceneDeserializationException("Fov has to be in the range [1, 360]");
+            }
+
             scene.Eps = Utils.ParseFloat(elScene.Element(nameof(Eps)).Value);
+
+            if (scene.Eps <= 0f)
+            {
+                throw new SceneDeserializationException("Eps has to be positive");
+            }
+
             scene.LightingType = Enum.Parse<LightingType>(elScene.Element(nameof(LightingType)).Value);
 
             XElement elMarchAlg = elScene.Element(nameof(MarchingAlgorithm));
@@ -103,6 +127,11 @@ namespace RayMarchLib
             if (elShadowSoftness is not null)
             {
                 scene.ShadowSoftness = Utils.ParseFloat(elShadowSoftness.Value);
+
+                if (scene.ShadowSoftness <= 0f)
+                {
+                    throw new SceneDeserializationException("ShadowSoftness has to be positive");
+                }
             }
 
             XElement elAntiAliasing = elScene.Element(nameof(AntiAliasing));
@@ -121,21 +150,41 @@ namespace RayMarchLib
             if (elMaxDist is not null)
             {
                 scene.MaxDist = Utils.ParseFloat(elMaxDist.Value);
+
+                if (scene.MaxDist <= 0f)
+                {
+                    throw new SceneDeserializationException("MaxDist has to be positive");
+                }
             }
 
             XElement elStep = elScene.Element(nameof(Step));
             if (elStep is not null)
             {
                 scene.Step = Utils.ParseFloat(elStep.Value);
+
+                if (scene.Step <= 0f)
+                {
+                    throw new SceneDeserializationException("Step has to be positive");
+                }
             }
 
             XElement elShadowFactor = elScene.Element(nameof(ShadowFactor));
             if (elShadowFactor is not null)
             {
                 scene.ShadowFactor = Utils.ParseFloat(elShadowFactor.Value);
+
+                if (scene.ShadowFactor <= 0)
+                {
+                    throw new SceneDeserializationException("ShadowFactor has to be positive");
+                }
             }
 
             scene.MaxIterations = (int)elScene.Element(nameof(MaxIterations));
+
+            if (scene.MaxIterations <= 0)
+            {
+                throw new SceneDeserializationException("MaxIterations has to be positive");
+            }
 
             XElement elCamera = elScene.Element(nameof(Camera));
             if (elCamera is not null)

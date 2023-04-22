@@ -59,30 +59,55 @@ namespace RayMarchLib
             if (attrColor is not null)
             {
                 m.Color = Utils.ToVec3(attrColor.Value);
+
+                if (Vector3.Clamp(m.Color, Vector3.Zero, Vector3.One) != m.Color)
+                {
+                    throw new SceneDeserializationException($"Color must be between {Vector3.Zero} and {Vector3.One}");
+                }
             }
 
             XAttribute attrAmbient = el.Attribute(nameof(Ambient));
             if (attrAmbient is not null)
             {
                 m.Ambient = Utils.ParseFloat(attrAmbient.Value);
+
+                if (m.Ambient < 0f)
+                {
+                    throw new SceneDeserializationException("Ambient cannot be negative");
+                }
             }
 
             XAttribute attrDiffuse = el.Attribute(nameof(Diffuse));
             if (attrDiffuse is not null)
             {
                 m.Diffuse = Utils.ParseFloat(attrDiffuse.Value);
+
+                if (m.Diffuse < 0f)
+                {
+                    throw new SceneDeserializationException("Diffuse cannot be negative");
+                }
             }
 
             XAttribute attrSpecular = el.Attribute(nameof(Specular));
             if (attrSpecular is not null)
             {
                 m.Specular = Utils.ParseFloat(attrSpecular.Value);
+
+                if (m.Specular < 0f)
+                {
+                    throw new SceneDeserializationException("Specular cannot be negative");
+                }
             }
 
             XAttribute attrShininess = el.Attribute(nameof(Shininess));
             if (attrShininess is not null)
             {
                 m.Shininess = Utils.ParseFloat(attrShininess.Value);
+
+                if (m.Shininess < 0f)
+                {
+                    throw new SceneDeserializationException("Shininess cannot be negative");
+                }
             }
 
             return m;

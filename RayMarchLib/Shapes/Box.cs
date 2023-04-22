@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Numerics;
 using System.Xml.Linq;
 
@@ -23,6 +22,11 @@ namespace RayMarchLib
             if (attrSize is not null)
             {
                 Size = Utils.ToVec3(attrSize.Value);
+
+                if (Size.X < 0f || Size.Y < 0f || Size.Z < 0f)
+                {
+                    throw new SceneDeserializationException("Box Size cannot be negative");
+                }
             }
         }
     }

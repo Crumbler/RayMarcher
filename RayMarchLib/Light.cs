@@ -27,18 +27,33 @@ namespace RayMarchLib
             if (attrColor is not null)
             {
                 light.Color = Utils.ToVec3(attrColor.Value);
+
+                if (Vector3.Clamp(light.Color, Vector3.Zero, Vector3.One) != light.Color)
+                {
+                    throw new SceneDeserializationException($"Color must be between {Vector3.Zero} and {Vector3.One}");
+                }
             }
 
             XAttribute attrAttenuation = el.Attribute(nameof(Attenuation));
             if (attrAttenuation is not null)
             {
                 light.Attenuation = Utils.ToVec3(attrAttenuation.Value);
+
+                if (Vector3.Max(Vector3.Zero, light.Attenuation) != light.Attenuation)
+                {
+                    throw new SceneDeserializationException($"Attenuation must be between positive");
+                }
             }
 
             XAttribute attrIntensity = el.Attribute(nameof(Intensity));
             if (attrIntensity is not null)
             {
                 light.Intensity = Utils.ParseFloat(attrIntensity.Value);
+
+                if (light.Intensity <= 0f)
+                {
+                    throw new SceneDeserializationException("Intensity must be positive");
+                }
             }
 
             switch (light.LightType)

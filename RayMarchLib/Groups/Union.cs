@@ -1,7 +1,7 @@
 ﻿
 namespace RayMarchLib
 {
-    public class Union : Group, IRMGroup
+    public class Union : Group
     {
         
     }

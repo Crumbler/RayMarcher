@@ -13,7 +13,7 @@ namespace RayMarchLib
         {
             if (this.obj is not null)
             {
-                throw new SceneDeserializationException("Only one object can be rounded.");
+                throw new SceneDeserializationException("Round can only contain one object");
             }
 
             this.obj = obj;
@@ -48,6 +48,11 @@ namespace RayMarchLib
             if (attrRadius is not null)
             {
                 Radius = Utils.ParseFloat(attrRadius.Value);
+
+                if (Radius < 0f)
+                {
+                    throw new SceneDeserializationException("Round Radius must be non-negative");
+                }
             }
         }
     }

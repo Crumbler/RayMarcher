@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Numerics;
 using System.Xml.Linq;
 
@@ -52,6 +51,11 @@ namespace RayMarchLib
             if (attrIterations is not null)
             {
                 Iterations = (int)attrIterations;
+
+                if (Iterations <= 0)
+                {
+                    throw new SceneDeserializationException("Iterations must be positive");
+                }
             }
         }
     }

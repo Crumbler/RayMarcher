@@ -24,12 +24,22 @@ namespace RayMarchLib
             if (attrInnerRadius is not null)
             {
                 InnerRadius = Utils.ParseFloat(attrInnerRadius.Value);
+
+                if (InnerRadius <= 0f)
+                {
+                    throw new SceneDeserializationException("InnerRadius must be positive");
+                }
             }
 
             XAttribute attrOuterRadius = elObj.Attribute(nameof(OuterRadius));
             if (attrOuterRadius is not null)
             {
                 OuterRadius = Utils.ParseFloat(attrOuterRadius.Value);
+
+                if (OuterRadius <= 0f)
+                {
+                    throw new SceneDeserializationException("OuterRadius must be positive");
+                }
             }
         }
     }

@@ -21,6 +21,11 @@ namespace RayMarchLib
             if (attrRadius is not null)
             {
                 Radius = Utils.ParseFloat(attrRadius.Value);
+
+                if (Radius <= 0f)
+                {
+                    throw new SceneDeserializationException("Radius must be positive");
+                }
             }
         }
     }

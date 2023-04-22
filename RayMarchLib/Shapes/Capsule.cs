@@ -26,12 +26,22 @@ namespace RayMarchLib
             if (attrLength is not null)
             {
                 Length = Utils.ParseFloat(attrLength.Value);
+
+                if (Length <= 0f)
+                {
+                    throw new SceneDeserializationException("Length must be positive");
+                }
             }
 
             XAttribute attrRadius = elObj.Attribute(nameof(Radius));
             if (attrRadius is not null)
             {
                 Radius = Utils.ParseFloat(attrRadius.Value);
+
+                if (Radius <= 0f)
+                {
+                    throw new SceneDeserializationException("Radius must be positive");
+                }
             }
         }
     }
