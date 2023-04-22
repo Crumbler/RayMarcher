@@ -8,7 +8,7 @@ namespace RayMarchLib
         protected readonly List<RMObject> objects = new();
         protected override float GetDist(Vector3 v)
         {
-            float minDist = float.PositiveInfinity;
+            float minDist = float.MaxValue;
 
             for (int i = 0; i < objects.Count; ++i)
             {
@@ -24,7 +24,7 @@ namespace RayMarchLib
 
         protected override HitResult GetHit(Vector3 v)
         {
-            float minDist = float.PositiveInfinity;
+            float minDist = float.MaxValue;
             RMObject hitObj = null;
 
             for (int i = 0; i < objects.Count; ++i)

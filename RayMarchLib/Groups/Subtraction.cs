@@ -2,7 +2,7 @@
 
 namespace RayMarchLib
 {
-    public class Subtraction : Group
+    public class Subtraction : Intersection
     {
         protected override float GetDist(Vector3 v)
         {
@@ -40,16 +40,6 @@ namespace RayMarchLib
             hit.material ??= this.Material;
 
             return hit;
-        }
-
-        public override void PreCalculate()
-        {
-            base.PreCalculate();
-
-            if (objects.Count <= 1)
-            {
-                throw new SceneDeserializationException("Subtraction must contain at least 2 objects.");
-            }
         }
     }
 }

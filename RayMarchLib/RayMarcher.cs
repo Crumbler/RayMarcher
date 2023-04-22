@@ -132,7 +132,7 @@ namespace RayMarchLib
 
         private float Map(Vector3 v)
         {
-            float minDist = float.PositiveInfinity;
+            float minDist = float.MaxValue;
             
             for (int i = 0; i < Scene.Objects.Count; ++i)
             {
@@ -160,7 +160,7 @@ namespace RayMarchLib
 
         private HitResult GetHit(Vector3 v)
         {
-            float minDist = float.PositiveInfinity;
+            float minDist = float.MaxValue;
             RMObject hitObj = null;
 
             for (int i = 0; i < Scene.Objects.Count; ++i)

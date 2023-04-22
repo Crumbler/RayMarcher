@@ -1,5 +1,4 @@
-﻿
-using System.Numerics;
+﻿using System.Numerics;
 
 namespace RayMarchLib
 {
@@ -49,7 +48,7 @@ namespace RayMarchLib
 
             if (objects.Count <= 1)
             {
-                throw new SceneDeserializationException("Intersection must contain at least 2 objects.");
+                throw new SceneDeserializationException($"{GetType().Name} must contain at least 2 objects.");
             }
         }
     }
