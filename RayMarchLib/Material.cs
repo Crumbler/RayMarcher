@@ -21,11 +21,35 @@ namespace RayMarchLib
         }
 
         public static Material
-        Default = new(),
-        Background = new()
+            Default = new(),
+            Background = new()
+            {
+                Color = Vector3.Zero
+            };
+
+        #region Operators
+
+        public static Material operator +(Material a, Material b) => new()
         {
-            Color = Vector3.Zero
+            Color = a.Color + b.Color,
+            Ambient = a.Ambient + b.Ambient,
+            Diffuse = a.Diffuse + b.Diffuse,
+            Specular = a.Specular + b.Specular,
+            Shininess = a.Shininess + b.Shininess
         };
+
+        public static Material operator *(Material a, float f)
+        {
+            a.Color *= f;
+            a.Ambient *= f;
+            a.Diffuse *= f;
+            a.Specular *= f;
+            a.Shininess *= f;
+
+            return a;
+        }
+
+        #endregion
 
         public static Material ParseMaterial(XElement el)
         {

@@ -107,6 +107,45 @@ namespace RayMarchLib
         public static float MaxZero(this float x) => MathF.Max(x, 0f);
         public static float MinZero(this float x) => MathF.Min(x, 0f);
 
+        public static float Mix(float a, float b, float x) => a * (1f - x) + b * x;
+        public static Material Mix(Material a, Material b, float x) => a * (1f - x) + b * x;
+
+        public static float SmoothMin(float a, float b, float k)
+        {
+            float h = Clamp(0.5f + 0.5f * (b - a) / k, 0f, 1f);
+
+            return Mix(b, a, h) - k * h * (1f - h);
+        }
+
+        public static (float, Material) SmoothMin(Material matA, Material matB, float a, float b, float k)
+        {
+            float h = Clamp(0.5f + 0.5f * (b - a) / k, 0f, 1f);
+            
+            float fRes = Mix(b, a, h) - k * h * (1f - h);
+
+            Material m = Mix(matB, matA, h);
+
+            return (fRes, m);
+        }
+
+        public static float SmoothIntersection(float a, float b, float k)
+        {
+            float h = Clamp(0.5f - 0.5f * (b - a) / k, 0f, 1f);
+
+            return Mix(b, a, h) + k * h * (1f - h);
+        }
+
+        public static (float, Material) SmoothIntersection(Material matA, Material matB, float a, float b, float k)
+        {
+            float h = Clamp(0.5f - 0.5f * (b - a) / k, 0f, 1f);
+
+            float fRes = Mix(b, a, h) - k * h * (1f - h);
+
+            Material m = Mix(matB, matA, h);
+
+            return (fRes, m);
+        }
+
         #region Vectors
 
         public static bool HasFraction(Vector3 v)
