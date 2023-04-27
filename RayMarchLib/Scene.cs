@@ -87,35 +87,70 @@ namespace RayMarchLib
 
         private static void LoadParams(Scene scene, XElement elScene)
         {
-            scene.ImageWidth = (int)elScene.Element(nameof(ImageWidth));
+            try
+            {
+                scene.ImageWidth = (int)elScene.Element(nameof(ImageWidth));
+            }
+            catch (ArgumentNullException)
+            {
+                throw new SceneDeserializationException($"{nameof(ImageWidth)} has to be specified");
+            }
 
             if (scene.ImageWidth <= 0)
             {
                 throw new SceneDeserializationException("ImageWidth has to be positive");
             }
 
-            scene.ImageHeight = (int)elScene.Element(nameof(ImageHeight));
+            try
+            {
+                scene.ImageHeight = (int)elScene.Element(nameof(ImageHeight));
+            }
+            catch (ArgumentNullException)
+            {
+                throw new SceneDeserializationException($"{nameof(ImageHeight)} has to be specified");
+            }
 
             if (scene.ImageHeight <= 0)
             {
                 throw new SceneDeserializationException("ImageHeight has to be positive");
             }
 
-            scene.Fov = Utils.ToRadians(Utils.ParseFloat(elScene.Element(nameof(Fov)).Value));
+            try
+            {
+                scene.Fov = Utils.ToRadians(Utils.ParseFloat(elScene.Element(nameof(Fov)).Value));
+            }
+            catch (ArgumentNullException)
+            {
+                throw new SceneDeserializationException($"{nameof(Fov)} has to be specified");
+            }
 
             if (scene.Fov < Utils.ToRadians(1f) || scene.Fov > Utils.ToRadians(360f))
             {
                 throw new SceneDeserializationException("Fov has to be in the range [1, 360]");
             }
 
-            scene.Eps = Utils.ParseFloat(elScene.Element(nameof(Eps)).Value);
+            try
+            {
+                scene.Eps = Utils.ParseFloat(elScene.Element(nameof(Eps)).Value);
+            }
+            catch (ArgumentNullException)
+            {
+                throw new SceneDeserializationException($"{nameof(Eps)} has to be specified");
+            }
 
             if (scene.Eps <= 0f)
             {
                 throw new SceneDeserializationException("Eps has to be positive");
             }
 
-            scene.LightingType = Enum.Parse<LightingType>(elScene.Element(nameof(LightingType)).Value);
+            try
+            {
+                scene.LightingType = Enum.Parse<LightingType>(elScene.Element(nameof(LightingType)).Value);
+            }
+            catch (ArgumentNullException)
+            {
+                throw new SceneDeserializationException($"{nameof(LightingType)} has to be specified");
+            }
 
             XElement elMarchAlg = elScene.Element(nameof(MarchingAlgorithm));
             if (elMarchAlg is not null)
@@ -179,7 +214,14 @@ namespace RayMarchLib
                 }
             }
 
-            scene.MaxIterations = (int)elScene.Element(nameof(MaxIterations));
+            try
+            {
+                scene.MaxIterations = (int)elScene.Element(nameof(MaxIterations));
+            }
+            catch (ArgumentNullException)
+            {
+                throw new SceneDeserializationException($"{nameof(MaxIterations)} has to be specified");
+            }
 
             if (scene.MaxIterations <= 0)
             {
