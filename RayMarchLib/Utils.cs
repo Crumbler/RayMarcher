@@ -106,8 +106,8 @@ namespace RayMarchLib
 
         public static float MaxZero(this float x) => MathF.Max(x, 0f);
         public static float MinZero(this float x) => MathF.Min(x, 0f);
-
         public static float Mix(float a, float b, float x) => a * (1f - x) + b * x;
+        public static Vector3 Mix(Vector3 a, Vector3 b, float x) => a * (1f - x) + b * x;
         public static Material Mix(Material a, Material b, float x) => a * (1f - x) + b * x;
 
         public static float SmoothMin(float a, float b, float k)

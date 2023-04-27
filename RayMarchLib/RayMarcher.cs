@@ -480,18 +480,27 @@ namespace RayMarchLib
         {
             MarchResult res = March(RayOrigin, GetRayDir(y, x), Scene.MaxDist);
 
+            Vector3 c;
+
             if (res.distToObject < Scene.Eps)
             {
                 HitResult hit = GetHit(res.position);
 
                 Material m = hit.material ?? Material.Default;
 
-                return GetColorAtPoint(res.position, m, res.direction);
+                c = GetColorAtPoint(res.position, m, res.direction);
             }
             else
             {
-                return Material.Background.Color;
+                c = Material.Background.Color;
             }
+
+            if (Scene.Fog is not null)
+            {
+                c = Utils.Mix(c, Scene.Fog.Color, 1f - MathF.Exp(-res.distance * Scene.Fog.FalloffFactor));
+            }
+
+            return c;
         }
 
         private Vector3 CalculatePixelColor(float x, float y)

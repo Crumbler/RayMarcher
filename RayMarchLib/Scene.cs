@@ -28,8 +28,8 @@ namespace RayMarchLib
         public List<RMObject> Objects { get; private set; }
         public List<Light> Lights { get; private set; }
         public Camera Camera { get; set; }
-
         public Dictionary<string, Material> Materials { get; private set; }
+        public Fog Fog { get; set; }
 
         public Scene()
         {
@@ -232,6 +232,12 @@ namespace RayMarchLib
             if (elCamera is not null)
             {
                 scene.Camera = Camera.Deserialize(elCamera);
+            }
+
+            XElement elFog = elScene.Element(nameof(Fog));
+            if (elFog is not null)
+            {
+                scene.Fog = Fog.ParseFog(elFog);
             }
         }
 
