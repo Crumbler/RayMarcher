@@ -31,9 +31,10 @@ namespace RayMarchLib
 
             for (int i = 0; i < objects.Count; ++i)
             {
-                Material objMat = objects[i].Material ?? RayMarchLib.Material.Default;
+                HitResult res = objects[i].MapHit(v);
+                Material objMat = res.material ?? RayMarchLib.Material.Default;
 
-                (float dist, Material newMat) = Utils.SmoothMin(currM, objMat, minDist, objects[i].Map(v), BlendRadius);
+                (float dist, Material newMat) = Utils.SmoothMin(currM, objMat, minDist, res.distance, BlendRadius);
                 if (minDist > dist)
                 {
                     minDist = dist;

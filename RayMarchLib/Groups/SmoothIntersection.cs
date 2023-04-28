@@ -22,14 +22,16 @@ namespace RayMarchLib
 
         protected override HitResult GetHit(Vector3 v)
         {
-            float maxDist = objects[^1].Map(v);
-            Material currM = objects[^1].Material ?? RayMarchLib.Material.Default;
+            HitResult initialHit = objects[^1].MapHit(v);
+            float maxDist = initialHit.distance;
+            Material currM = initialHit.material ?? RayMarchLib.Material.Default;
 
             for (int i = objects.Count - 2; i >= 0; --i)
             {
-                Material objMat = objects[i].Material ?? RayMarchLib.Material.Default;
+                HitResult res = objects[i].MapHit(v);
+                Material objMat = res.material ?? RayMarchLib.Material.Default;
 
-                (float dist, Material newMat) = Utils.SmoothIntersection(currM, objMat, maxDist, objects[i].Map(v), BlendRadius);
+                (float dist, Material newMat) = Utils.SmoothIntersection(currM, objMat, maxDist, res.distance, BlendRadius);
                 if (maxDist < dist)
                 {
                     maxDist = dist;
