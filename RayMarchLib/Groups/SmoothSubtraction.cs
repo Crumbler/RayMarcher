@@ -6,9 +6,9 @@ namespace RayMarchLib
     {
         protected override float GetDist(Vector3 v)
         {
-            float maxDist = objects[^1].Map(v);
+            float maxDist = objects[0].Map(v);
 
-            for (int i = objects.Count - 2; i >= 0; --i)
+            for (int i = 1; i < objects.Count; ++i)
             {
                 float dist = Utils.SmoothIntersection(maxDist, -objects[i].Map(v), BlendRadius);
                 if (maxDist < dist)
@@ -22,11 +22,11 @@ namespace RayMarchLib
 
         protected override HitResult GetHit(Vector3 v)
         {
-            HitResult initialHit = objects[^1].MapHit(v);
+            HitResult initialHit = objects[0].MapHit(v);
             float maxDist = initialHit.distance;
             Material currM = initialHit.material ?? RayMarchLib.Material.Default;
 
-            for (int i = objects.Count - 2; i >= 0; --i)
+            for (int i = 1; i < objects.Count; ++i)
             {
                 HitResult res = objects[i].MapHit(v);
                 Material objMat = res.material ?? RayMarchLib.Material.Default;

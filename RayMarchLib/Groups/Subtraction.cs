@@ -6,9 +6,9 @@ namespace RayMarchLib
     {
         protected override float GetDist(Vector3 v)
         {
-            float maxDist = objects[^1].Map(v);
+            float maxDist = objects[0].Map(v);
 
-            for (int i = objects.Count - 2; i >= 0; --i)
+            for (int i = 1; i < objects.Count; ++i)
             {
                 float dist = -objects[i].Map(v);
                 if (maxDist < dist)
@@ -22,10 +22,10 @@ namespace RayMarchLib
 
         protected override HitResult GetHit(Vector3 v)
         {
-            float maxDist = objects[^1].Map(v);
-            RMObject hitObj = objects[^1];
+            float maxDist = objects[0].Map(v);
+            RMObject hitObj = objects[0];
 
-            for (int i = objects.Count - 2; i >= 0; --i)
+            for (int i = 1; i < objects.Count; ++i)
             {
                 float dist = -objects[i].Map(v);
                 if (maxDist < dist)

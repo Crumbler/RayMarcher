@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Linq;
 
 namespace RayMarchLib
@@ -10,7 +11,7 @@ namespace RayMarchLib
         {
             descObjects.Push(null);
 
-            foreach (XElement elDescObj in elObj.Elements())
+            foreach (XElement elDescObj in elObj.Elements().Reverse())
             {
                 descObjects.Push(elDescObj);
             }
