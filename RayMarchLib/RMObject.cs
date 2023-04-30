@@ -16,11 +16,11 @@ namespace RayMarchLib
         /// </summary>
         public Vector3 Rotation { get; set; }
 
-        private Matrix4x4 InvModelMatrix { get; set; }
+        private Matrix4x4 modMatInv;
 
         public float Map(Vector3 v)
         {
-            v = Vector3.Transform(v, InvModelMatrix);
+            v = Vector3.Transform(v, modMatInv);
 
             return GetDist(v) * Scale * (Invert ? -1f : 1f);
         }
@@ -31,16 +31,14 @@ namespace RayMarchLib
                     Matrix4x4.CreateFromYawPitchRoll(Rotation.Y, Rotation.X, Rotation.Z) * 
                     Matrix4x4.CreateTranslation(Position);
 
-            Matrix4x4.Invert(m, out m);
-
-            InvModelMatrix = m;
+            Matrix4x4.Invert(m, out modMatInv);
         }
 
         protected abstract float GetDist(Vector3 v);
 
         public HitResult MapHit(Vector3 v)
         {
-            v = Vector3.Transform(v, InvModelMatrix);
+            v = Vector3.Transform(v, modMatInv);
 
             var hit = GetHit(v);
             hit.distance *= Scale * (Invert ? -1f : 1f);
