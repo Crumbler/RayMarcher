@@ -87,69 +87,54 @@ namespace RayMarchLib
 
         private static void LoadParams(Scene scene, XElement elScene)
         {
-            try
+            XElement elImWidth = elScene.Element(nameof(ImageWidth));
+            if (elImWidth is not null)
             {
-                scene.ImageWidth = (int)elScene.Element(nameof(ImageWidth));
-            }
-            catch (ArgumentNullException)
-            {
-                throw new SceneDeserializationException($"{nameof(ImageWidth)} has to be specified");
+                scene.ImageWidth = (int)elImWidth;
+
+                if (scene.ImageWidth <= 0)
+                {
+                    throw new SceneDeserializationException($"{nameof(ImageWidth)} has to be positive");
+                }
             }
 
-            if (scene.ImageWidth <= 0)
+            XElement elImHeight = elScene.Element(nameof(ImageHeight));
+            if (elImHeight is not null)
             {
-                throw new SceneDeserializationException("ImageWidth has to be positive");
+                scene.ImageHeight = (int)elImHeight;
+
+                if (scene.ImageHeight <= 0)
+                {
+                    throw new SceneDeserializationException($"{nameof(ImageHeight)} has to be positive");
+                }
             }
 
-            try
+            XElement elFov = elScene.Element(nameof(Fov));
+            if (elFov is not null)
             {
-                scene.ImageHeight = (int)elScene.Element(nameof(ImageHeight));
-            }
-            catch (ArgumentNullException)
-            {
-                throw new SceneDeserializationException($"{nameof(ImageHeight)} has to be specified");
+                scene.Fov = Utils.ToRadians(Utils.ParseFloat(elFov.Value));
+
+                if (scene.Fov < Utils.ToRadians(1f) || scene.Fov > Utils.ToRadians(360f))
+                {
+                    throw new SceneDeserializationException($"{nameof(Fov)} has to be in the range [1, 360]");
+                }
             }
 
-            if (scene.ImageHeight <= 0)
+            XElement elEps = elScene.Element(nameof(Eps));
+            if (elEps is not null)
             {
-                throw new SceneDeserializationException("ImageHeight has to be positive");
+                scene.Eps = Utils.ParseFloat(elEps.Value);
+
+                if (scene.Eps <= 0f)
+                {
+                    throw new SceneDeserializationException($"{nameof(Eps)} has to be positive");
+                }
             }
 
-            try
+            XElement elLightingType = elScene.Element(nameof(LightingType));
+            if (elLightingType is not null)
             {
-                scene.Fov = Utils.ToRadians(Utils.ParseFloat(elScene.Element(nameof(Fov)).Value));
-            }
-            catch (ArgumentNullException)
-            {
-                throw new SceneDeserializationException($"{nameof(Fov)} has to be specified");
-            }
-
-            if (scene.Fov < Utils.ToRadians(1f) || scene.Fov > Utils.ToRadians(360f))
-            {
-                throw new SceneDeserializationException("Fov has to be in the range [1, 360]");
-            }
-
-            try
-            {
-                scene.Eps = Utils.ParseFloat(elScene.Element(nameof(Eps)).Value);
-            }
-            catch (ArgumentNullException)
-            {
-                throw new SceneDeserializationException($"{nameof(Eps)} has to be specified");
-            }
-
-            if (scene.Eps <= 0f)
-            {
-                throw new SceneDeserializationException("Eps has to be positive");
-            }
-
-            try
-            {
-                scene.LightingType = Enum.Parse<LightingType>(elScene.Element(nameof(LightingType)).Value);
-            }
-            catch (ArgumentNullException)
-            {
-                throw new SceneDeserializationException($"{nameof(LightingType)} has to be specified");
+                scene.LightingType = Enum.Parse<LightingType>(elLightingType.Value);
             }
 
             XElement elMarchAlg = elScene.Element(nameof(MarchingAlgorithm));
@@ -165,7 +150,7 @@ namespace RayMarchLib
 
                 if (scene.ShadowSoftness <= 0f)
                 {
-                    throw new SceneDeserializationException("ShadowSoftness has to be positive");
+                    throw new SceneDeserializationException($"{nameof(ShadowSoftness)} has to be positive");
                 }
             }
 
@@ -188,7 +173,7 @@ namespace RayMarchLib
 
                 if (scene.MaxDist <= 0f)
                 {
-                    throw new SceneDeserializationException("MaxDist has to be positive");
+                    throw new SceneDeserializationException($"{nameof(MaxDist)} has to be positive");
                 }
             }
 
@@ -199,7 +184,7 @@ namespace RayMarchLib
 
                 if (scene.Step <= 0f)
                 {
-                    throw new SceneDeserializationException("Step has to be positive");
+                    throw new SceneDeserializationException($"{nameof(Step)} has to be positive");
                 }
             }
 
@@ -210,22 +195,19 @@ namespace RayMarchLib
 
                 if (scene.ShadowFactor <= 0)
                 {
-                    throw new SceneDeserializationException("ShadowFactor has to be positive");
+                    throw new SceneDeserializationException($"{nameof(ShadowFactor)} has to be positive");
                 }
             }
 
-            try
+            XElement elMaxIterations = elScene.Element(nameof(MaxIterations));
+            if (elMaxIterations is not null)
             {
-                scene.MaxIterations = (int)elScene.Element(nameof(MaxIterations));
-            }
-            catch (ArgumentNullException)
-            {
-                throw new SceneDeserializationException($"{nameof(MaxIterations)} has to be specified");
-            }
+                scene.MaxIterations = (int)elMaxIterations;
 
-            if (scene.MaxIterations <= 0)
-            {
-                throw new SceneDeserializationException("MaxIterations has to be positive");
+                if (scene.MaxIterations <= 0)
+                {
+                    throw new SceneDeserializationException($"{nameof(MaxIterations)} has to be positive");
+                }
             }
 
             XElement elCamera = elScene.Element(nameof(Camera));
